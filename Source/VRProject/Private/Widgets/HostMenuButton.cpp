@@ -11,7 +11,5 @@ UHostMenuButton::UHostMenuButton() : Super()
 
 void UHostMenuButton::HandleClickEvent()
 {
-	UWorld* world = GetWorld();
-
-	UGameplayStatics::OpenLevel(this, FName(TEXT("MotionControllerMap")));
+	UGameplayStatics::OpenLevel(this, FName(TEXT("MotionControllerMap")), true, "listen");
 }

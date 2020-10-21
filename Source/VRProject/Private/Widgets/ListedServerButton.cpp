@@ -1,0 +1,9 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Widgets/ListedServerButton.h"
+
+UListedServerButton::UListedServerButton() : Super()
+{
+
+}
