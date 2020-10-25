@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/Widget.h"
+#include "OnlineSessionSettings.h"
+#include "FindSessionsCallbackProxy.h"
 #include "ServerMenuWidget.generated.h"
+
+//USTRUCT(BlueprintType)
+//struct FBlueprintSessionResult
+//{
+//	GENERATED_USTRUCT_BODY()
+//
+//	FOnlineSessionSearchResult OnlineResult;
+//};
 
 /**
  * 
@@ -16,13 +26,15 @@ class VRPROJECT_API UServerMenuWidget : public UWidget
 
 	private:
 		UPROPERTY()
-		class UGameInstance* GameInstance;
+		class UNetworkedGameInstance* GameInstance;
 	
 	protected:
 		virtual TSharedRef<SWidget> RebuildWidget() override;
 
 		// The Slate server menu
 		TSharedPtr<class SServerMenu> SlateServerMenu;
+
+		TArray<FBlueprintSessionResult> LobbyResults;
 
 	public:
 		UServerMenuWidget(const FObjectInitializer& ObjectInitializer);
@@ -35,4 +47,7 @@ class VRPROJECT_API UServerMenuWidget : public UWidget
 		void HostLobbyClickedHandler();
 		void FindLobbyClickedHandler();
 		void JoinLobbyClickedHandler();
+
+		UFUNCTION(BlueprintCallable)
+		void PopulateLobbyButtons(TArray<FBlueprintSessionResult> result);
 };
