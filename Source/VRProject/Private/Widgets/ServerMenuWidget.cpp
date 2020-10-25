@@ -48,7 +48,7 @@ void UServerMenuWidget::FindLobbyClickedHandler()
 
 void UServerMenuWidget::JoinLobbyClickedHandler()
 {
-	if (LobbyResults.Num() == 0)
+	if (LobbyResults.Num() == 0 || FocusedMenu >= LobbyResults.Num())
 		return;
 
 	GameInstance = Cast<UNetworkedGameInstance>(GetGameInstance());
@@ -63,11 +63,28 @@ void UServerMenuWidget::PopulateLobbyButtons(TArray<FBlueprintSessionResult> res
 {
 	LobbyResults = result;
 	FChildren* children = SlateServerMenu->GetChildren();
+
+	// Slate widget arranged with lobby buttons in second vertical box
+	SWidget& horizBox = children->GetChildAt(0).Get();
+	SWidget& LobbyBox = horizBox.GetChildren()->GetChildAt(1).Get();
+	FChildren* LobbyButtons = LobbyBox.GetChildren();
 	UE_LOG(LogTemp, Warning, TEXT("Result %f"), result.Num());
 	int i;
-	for (i = 0; i < children->Num(); i++)
+	for (i = 0; i < LobbyButtons->Num(); i++)
 	{
-
+		// Text box to set text is the first child of the button
+		SWidget& Button = LobbyButtons->GetChildAt(i).Get();
+		STextBlock& TextBox = (STextBlock&)Button.GetChildren()->GetChildAt(0).Get();
+		// If a session, set the button text
+		if (i < LobbyResults.Num())
+		{
+			FBlueprintSessionResult curr_sess = LobbyResults[i];
+			TextBox.SetText(curr_sess.OnlineResult.Session.OwningUserName);
+		}
+		else
+		{
+			TextBox.SetText(FString(TEXT("")));
+		}
 	}
 }
 
