@@ -25,4 +25,7 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 	
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void JoinLobby(FBlueprintSessionResult ChosenResult);
+
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void LeaveLobby();
 };

@@ -8,13 +8,6 @@
 #include "FindSessionsCallbackProxy.h"
 #include "ServerMenuWidget.generated.h"
 
-//USTRUCT(BlueprintType)
-//struct FBlueprintSessionResult
-//{
-//	GENERATED_USTRUCT_BODY()
-//
-//	FOnlineSessionSearchResult OnlineResult;
-//};
 
 /**
  * 
