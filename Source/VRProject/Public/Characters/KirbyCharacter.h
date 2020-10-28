@@ -15,6 +15,30 @@ public:
 	// Sets default values for this character's properties
 	AKirbyCharacter();
 
+	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* VRRoot;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
+	class UCameraComponent* KirbyCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	class UStaticMeshComponent* TeleportationMarker;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	float MaxTeleportDistance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	int MaxNumOfTeleports;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	int CurrentNumOfTeleports;
+
+private:
+
+	bool bTeleporting;
+
+	FTimerHandle TeleportUpdateLocationHandle;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,4 +50,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+
+	void Teleport();
+
+	void CancelTeleport();
+
+	void UpdateTeleportMarker();
 };
