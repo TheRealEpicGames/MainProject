@@ -28,5 +28,5 @@ void UMidGameMenuWidget::LeaveLobbyClickedHandler()
 
 void UMidGameMenuWidget::SettingsClickedHandler()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("Settings Clicked"))
 }

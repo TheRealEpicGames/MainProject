@@ -15,9 +15,11 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 	GENERATED_BODY()
 
 	public:
-		
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Players)
-		TArray<APlayerController*> PlayerControllerList;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
+		float MaxTurnTime;
+
+		FTimerHandle TurnHandle;
 
 		ANetworkedGameMode();
 
@@ -25,4 +27,20 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 	protected:
 		// Called when the game starts or when spawned
 		virtual void BeginPlay() override;
+
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
+	public:
+
+		UFUNCTION(BlueprintCallable)
+		void StartTurns();
+
+		UFUNCTION(BlueprintCallable)
+		void NextTurn();
+
+		UFUNCTION(BlueprintCallable)
+		void EndAllTurns();
+
+		
 };
