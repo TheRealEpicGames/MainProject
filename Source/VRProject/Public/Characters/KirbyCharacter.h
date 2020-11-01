@@ -33,6 +33,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	int CurrentNumOfTeleports;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	float TeleportFadeDuration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	FVector TeleportProjectionExtent;
+
 private:
 
 	bool bTeleporting;
@@ -52,9 +58,15 @@ public:
 
 private:
 
-	void Teleport();
+	void BeginTeleport();
+
+	void EndTeleport();
 
 	void CancelTeleport();
 
+	bool FindTeleportationDestination(FVector& OutLocation);
+
 	void UpdateTeleportMarker();
+
+	void StartFade(float FromAlpha, float ToAlpha);
 };
