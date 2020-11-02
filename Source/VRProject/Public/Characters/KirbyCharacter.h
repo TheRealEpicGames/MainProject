@@ -21,11 +21,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera")
 	class UCameraComponent* KirbyCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
+	class UMotionControllerComponent* LeftMotionController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
+	class UMotionControllerComponent* RightMotionController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
+	class USkeletalMeshComponent* LeftHand;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
+	class USkeletalMeshComponent* RightHand;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	class UStaticMeshComponent* TeleportationMarker;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
+	class USplineComponent* TeleportPath;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
-	float MaxTeleportDistance;
+	float TeleportProjectileSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	float TeleportProjectileRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
+	float TeleportSimulationTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	int MaxNumOfTeleports;
@@ -64,7 +85,9 @@ private:
 
 	void CancelTeleport();
 
-	bool FindTeleportationDestination(FVector& OutLocation);
+	bool FindTeleportationDestination(TArray<FVector> &OutPath, FVector& OutLocation);
+
+	void UpdateTeleportSpline(const TArray<FVector> &Path);
 
 	void UpdateTeleportMarker();
 

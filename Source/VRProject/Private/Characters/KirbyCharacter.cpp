@@ -4,8 +4,12 @@
 #include "Characters/KirbyCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "NavigationSystem.h"
+#include "MotionControllerComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SplineComponent.h"
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -19,10 +23,29 @@ AKirbyCharacter::AKirbyCharacter()
 	KirbyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("KirbyCamera"));
 	KirbyCamera->SetupAttachment(VRRoot);
 
+	LeftMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftMotionController"));
+	LeftMotionController->SetupAttachment(VRRoot);
+	LeftMotionController->SetTrackingSource(EControllerHand::Left);
+
+	LeftHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftHandMesh"));
+	LeftHand->SetupAttachment(LeftMotionController);
+
+	RightMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightMotionController"));
+	RightMotionController->SetupAttachment(VRRoot);
+	RightMotionController->SetTrackingSource(EControllerHand::Right);
+
+	RightHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RightHandMesh"));
+	RightHand->SetupAttachment(RightMotionController);
+
 	TeleportationMarker = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeleportationMarker"));
 	TeleportationMarker->SetupAttachment(GetRootComponent());
 
-	MaxTeleportDistance = 3000.f;
+	TeleportPath = CreateDefaultSubobject<USplineComponent>(TEXT("TeleportPath"));
+	TeleportPath->SetupAttachment(RightMotionController);
+
+	TeleportProjectileSpeed = 700.f;
+	TeleportProjectileRadius = 10.f;
+	TeleportSimulationTime = 2.f;
 	MaxNumOfTeleports = 3;
 	CurrentNumOfTeleports = 3;
 	TeleportFadeDuration = 1;
@@ -97,15 +120,30 @@ void AKirbyCharacter::CancelTeleport()
 	GetWorldTimerManager().ClearTimer(TeleportUpdateLocationHandle);
 }
 
-bool AKirbyCharacter::FindTeleportationDestination(FVector& OutLocation)
+bool AKirbyCharacter::FindTeleportationDestination(TArray<FVector> &OutPath, FVector &OutLocation)
 {
-	FVector Start = KirbyCamera->GetComponentLocation();
-	FVector End = Start + KirbyCamera->GetForwardVector() * MaxTeleportDistance;
+	FVector Start = RightMotionController->GetComponentLocation();
+	FVector Look = RightMotionController->GetForwardVector();
 
-	FHitResult HitResult;
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+	FPredictProjectilePathParams Params(
+		TeleportProjectileRadius, 
+		Start,
+		Look * TeleportProjectileSpeed,
+		TeleportSimulationTime,
+		ECollisionChannel::ECC_Visibility,
+		this
+		);
+	Params.DrawDebugType = EDrawDebugTrace::ForOneFrame;
+
+	FPredictProjectilePathResult Result;
+	bool bHit = UGameplayStatics::PredictProjectilePath(this, Params, Result);
 
 	if (!bHit) return false;
+
+	for (FPredictProjectilePathPointData PointData : Result.PathData)
+	{
+		OutPath.Add(PointData.Location);
+	}
 
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 	if (!NavSystem)
@@ -115,7 +153,7 @@ bool AKirbyCharacter::FindTeleportationDestination(FVector& OutLocation)
 	}
 
 	FNavLocation NavLocation;
-	bool bValidNavProjection = NavSystem->ProjectPointToNavigation(HitResult.Location, NavLocation, TeleportProjectionExtent);
+	bool bValidNavProjection = NavSystem->ProjectPointToNavigation(Result.HitResult.Location, NavLocation, TeleportProjectionExtent);
 
 	if (!bValidNavProjection) return false;
 
@@ -124,15 +162,31 @@ bool AKirbyCharacter::FindTeleportationDestination(FVector& OutLocation)
 	return bValidNavProjection && bHit;
 }
 
+void AKirbyCharacter::UpdateTeleportSpline(const TArray<FVector> &Path)
+{
+	TeleportPath->ClearSplinePoints(false);
+	for (int i = 0; i < Path.Num(); ++i)
+	{
+		FVector LocalPos = TeleportPath->GetComponentTransform().InverseTransformPosition(Path[i]);
+		FSplinePoint Point(i, LocalPos, ESplinePointType::Curve);
+		TeleportPath->AddPoint(Point, false);
+	}
+
+	TeleportPath->UpdateSpline();
+}
+
 void AKirbyCharacter::UpdateTeleportMarker()
 {
 	FVector TeleportLocation;
+	TArray<FVector> Path;
 
-	if (FindTeleportationDestination(TeleportLocation))
+	if (FindTeleportationDestination(Path, TeleportLocation))
 	{
 		TeleportationMarker->SetVisibility(true);
 
 		TeleportationMarker->SetWorldLocation(TeleportLocation);
+
+		UpdateTeleportSpline(Path);
 	}
 	else
 	{
