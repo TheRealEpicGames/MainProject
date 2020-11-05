@@ -40,7 +40,7 @@ void SSlateMidGameMenu::Construct(const FArguments& InArgs)
 		.VAlign(VAlign_Fill)
 		[
 			SNew(SButton)
-			.OnClicked(this, &SSlateMidGameMenu::OnLeaveGameClicked)
+			.OnClicked(this, &SSlateMidGameMenu::OnSettingsClicked)
 			[
 				SNew(STextBlock)
 				.Font(ButtonFont)
