@@ -10,6 +10,8 @@
 #include "MotionControllerComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SplineComponent.h"
+#include "Components/SplineMeshComponent.h"
+#include "Characters/GameplayActors/KirbyHandController.h"
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -23,25 +25,11 @@ AKirbyCharacter::AKirbyCharacter()
 	KirbyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("KirbyCamera"));
 	KirbyCamera->SetupAttachment(VRRoot);
 
-	LeftMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("LeftMotionController"));
-	LeftMotionController->SetupAttachment(VRRoot);
-	LeftMotionController->SetTrackingSource(EControllerHand::Left);
-
-	LeftHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("LeftHandMesh"));
-	LeftHand->SetupAttachment(LeftMotionController);
-
-	RightMotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("RightMotionController"));
-	RightMotionController->SetupAttachment(VRRoot);
-	RightMotionController->SetTrackingSource(EControllerHand::Right);
-
-	RightHand = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RightHandMesh"));
-	RightHand->SetupAttachment(RightMotionController);
-
 	TeleportationMarker = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TeleportationMarker"));
 	TeleportationMarker->SetupAttachment(GetRootComponent());
 
 	TeleportPath = CreateDefaultSubobject<USplineComponent>(TEXT("TeleportPath"));
-	TeleportPath->SetupAttachment(RightMotionController);
+	TeleportPath->SetupAttachment(VRRoot);
 
 	TeleportProjectileSpeed = 700.f;
 	TeleportProjectileRadius = 10.f;
@@ -58,6 +46,22 @@ void AKirbyCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	TeleportationMarker->SetVisibility(false);
+
+	LeftController = GetWorld()->SpawnActor<AKirbyHandController>(HandControllerClass);
+	if (LeftController)
+	{
+		LeftController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		LeftController->SetOwner(this);
+		LeftController->SetHand(EControllerHand::Left);
+	}
+
+	RightController = GetWorld()->SpawnActor<AKirbyHandController>(HandControllerClass);
+	if (RightController)
+	{
+		RightController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
+		RightController->SetOwner(this);
+		RightController->SetHand(EControllerHand::Right);
+	}
 }
 
 // Called every frame
@@ -108,6 +112,10 @@ void AKirbyCharacter::EndTeleport()
 	SetActorLocation(TeleportationMarker->GetComponentLocation() + ZOffset);
 	bTeleporting = false;
 	TeleportationMarker->SetVisibility(false);
+	for (USplineMeshComponent* SplineMesh : TeleportPathMeshPool)
+	{
+		SplineMesh->SetVisibility(false);
+	}
 	GetWorldTimerManager().ClearTimer(TeleportUpdateLocationHandle);
 
 	StartFade(1, 0);
@@ -117,13 +125,17 @@ void AKirbyCharacter::CancelTeleport()
 {
 	bTeleporting = false;
 	TeleportationMarker->SetVisibility(false);
+	for (USplineMeshComponent* SplineMesh : TeleportPathMeshPool)
+	{
+		SplineMesh->SetVisibility(false);
+	}
 	GetWorldTimerManager().ClearTimer(TeleportUpdateLocationHandle);
 }
 
 bool AKirbyCharacter::FindTeleportationDestination(TArray<FVector> &OutPath, FVector &OutLocation)
 {
-	FVector Start = RightMotionController->GetComponentLocation();
-	FVector Look = RightMotionController->GetForwardVector();
+	FVector Start = RightController->GetActorLocation();
+	FVector Look = RightController->GetActorForwardVector();
 
 	FPredictProjectilePathParams Params(
 		TeleportProjectileRadius, 
@@ -133,7 +145,7 @@ bool AKirbyCharacter::FindTeleportationDestination(TArray<FVector> &OutPath, FVe
 		ECollisionChannel::ECC_Visibility,
 		this
 		);
-	Params.DrawDebugType = EDrawDebugTrace::ForOneFrame;
+	//Params.DrawDebugType = EDrawDebugTrace::ForOneFrame;
 
 	FPredictProjectilePathResult Result;
 	bool bHit = UGameplayStatics::PredictProjectilePath(this, Params, Result);
@@ -175,6 +187,39 @@ void AKirbyCharacter::UpdateTeleportSpline(const TArray<FVector> &Path)
 	TeleportPath->UpdateSpline();
 }
 
+void AKirbyCharacter::DrawTeleportPath(const TArray<FVector>& Path)
+{
+	UpdateTeleportSpline(Path);
+
+	for (USplineMeshComponent* SplineMesh : TeleportPathMeshPool)
+	{
+		SplineMesh->SetVisibility(false);
+	}
+
+	for (int i = 0; i < Path.Num() - 1; ++i)
+	{
+		if (TeleportPathMeshPool.Num() <= i)
+		{
+			USplineMeshComponent* SplineMesh = NewObject<USplineMeshComponent>(this);
+			SplineMesh->SetMobility(EComponentMobility::Movable);
+			SplineMesh->AttachToComponent(TeleportPath, FAttachmentTransformRules::KeepRelativeTransform);
+			SplineMesh->SetStaticMesh(TeleportArcMesh);
+			SplineMesh->SetMaterial(0, TeleportArcMaterial);
+			SplineMesh->RegisterComponent();
+
+			TeleportPathMeshPool.Add(SplineMesh);
+		}
+
+		USplineMeshComponent* SplineMesh = TeleportPathMeshPool[i];
+		SplineMesh->SetVisibility(true);
+
+		FVector StartPos, StartTangent, EndPos, EndTangent;
+		TeleportPath->GetLocalLocationAndTangentAtSplinePoint(i, StartPos, StartTangent);
+		TeleportPath->GetLocalLocationAndTangentAtSplinePoint(i + 1, EndPos, EndTangent);
+		SplineMesh->SetStartAndEnd(StartPos, StartTangent, EndPos, EndTangent);
+	}
+}
+
 void AKirbyCharacter::UpdateTeleportMarker()
 {
 	FVector TeleportLocation;
@@ -186,11 +231,14 @@ void AKirbyCharacter::UpdateTeleportMarker()
 
 		TeleportationMarker->SetWorldLocation(TeleportLocation);
 
-		UpdateTeleportSpline(Path);
+		DrawTeleportPath(Path);
 	}
 	else
 	{
 		TeleportationMarker->SetVisibility(false);
+		
+		TArray<FVector> EmptyPath;
+		DrawTeleportPath(EmptyPath);
 	}
 }
 

@@ -22,22 +22,19 @@ public:
 	class UCameraComponent* KirbyCamera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
-	class UMotionControllerComponent* LeftMotionController;
+	class AKirbyHandController* LeftController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
-	class UMotionControllerComponent* RightMotionController;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
-	class USkeletalMeshComponent* LeftHand;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controllers")
-	class USkeletalMeshComponent* RightHand;
+	class AKirbyHandController* RightController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	class UStaticMeshComponent* TeleportationMarker;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
 	class USplineComponent* TeleportPath;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
+	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	float TeleportProjectileSpeed;
@@ -59,6 +56,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	FVector TeleportProjectionExtent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Teleportation")
+	class UStaticMesh* TeleportArcMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Teleportation")
+	class UMaterialInterface* TeleportArcMaterial;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AKirbyHandController> HandControllerClass;
 
 private:
 
@@ -88,6 +94,8 @@ private:
 	bool FindTeleportationDestination(TArray<FVector> &OutPath, FVector& OutLocation);
 
 	void UpdateTeleportSpline(const TArray<FVector> &Path);
+	
+	void DrawTeleportPath(const TArray<FVector>& Path);
 
 	void UpdateTeleportMarker();
 
