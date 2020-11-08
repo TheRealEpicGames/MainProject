@@ -38,6 +38,8 @@ AKirbyCharacter::AKirbyCharacter()
 	CurrentNumOfTeleports = 3;
 	TeleportFadeDuration = 1;
 	TeleportProjectionExtent = FVector(100, 100, 100);
+
+	Health = 100.f;
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +87,31 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(TEXT("Teleport"), IE_Pressed, this, &AKirbyCharacter::BeginTeleport);
 	PlayerInputComponent->BindAction(TEXT("CancelTeleport"), IE_Pressed, this, &AKirbyCharacter::CancelTeleport);
 
+}
+
+void AKirbyCharacter::DecrementHealth(float Amount)
+{
+	if (Health - Amount <= 0.f)
+	{
+		Health -= Amount;
+		Die();
+	}
+	else
+	{
+		Health -= Amount;
+	}
+}
+
+float AKirbyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DecrementHealth(DamageAmount);
+
+	return DamageAmount;
+}
+
+void AKirbyCharacter::Die()
+{
+	//TODO: Death
 }
 
 void AKirbyCharacter::BeginTeleport()

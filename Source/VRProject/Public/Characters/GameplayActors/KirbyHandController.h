@@ -31,4 +31,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class UMotionControllerComponent* MotionController;
 
+	void HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	void HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
 };

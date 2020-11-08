@@ -19,12 +19,24 @@ void AKirbyHandController::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	OnActorBeginOverlap.AddDynamic(this, &AKirbyHandController::HandBeginOverlap);
+	OnActorEndOverlap.AddDynamic(this, &AKirbyHandController::HandEndOverlap);
 }
 
 // Called every frame
 void AKirbyHandController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void AKirbyHandController::HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	//TODO: Query for Items for (Grab item on field functionality)
+}
+
+void AKirbyHandController::HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
 
 }
 

@@ -14,7 +14,8 @@ class VRPROJECT_API AKirbyCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AKirbyCharacter();
-
+	
+	//Components
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* VRRoot;
 
@@ -36,6 +37,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
 	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
+	//Teleportation Properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	float TeleportProjectileSpeed;
 
@@ -66,6 +68,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AKirbyHandController> HandControllerClass;
 
+	//Health Properties
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player | Health")
+	float Health;
+
 private:
 
 	bool bTeleporting;
@@ -84,7 +90,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
+	//Health Functions
+	void DecrementHealth(float Amount);
 
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
+
+	void Die();
+
+	//Teleport Functions
 	void BeginTeleport();
 
 	void EndTeleport();
