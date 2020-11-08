@@ -2,6 +2,10 @@
 
 
 #include "Characters/GameplayActors/KirbyHandController.h"
+#include "Items/Item.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
 
 
 // Sets default values
@@ -12,6 +16,26 @@ AKirbyHandController::AKirbyHandController()
 
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	SetRootComponent(MotionController);
+
+	GripState = EGripState::EGS_Open;
+}
+
+void AKirbyHandController::SetGrabbableItem(AItem* Item)
+{
+	GrabbableItem = Item; 
+	if (GrabbableItem)
+	{
+		GripState = EGripState::EGS_CanGrab;
+	}
+	else
+	{
+		GripState = EGripState::EGS_Open;
+	}
+}
+
+void AKirbyHandController::GrabItem(AItem* Item)
+{
+	//TODO: Destroy Item, then add to inventory.
 }
 
 // Called when the game starts or when spawned
@@ -33,10 +57,28 @@ void AKirbyHandController::Tick(float DeltaTime)
 void AKirbyHandController::HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	//TODO: Query for Items for (Grab item on field functionality)
+	AItem* Item = Cast<AItem>(OtherActor);
+	if (Item)
+	{
+		APawn* Pawn = Cast<APawn>(GetAttachParentActor());
+		if (Pawn)
+		{
+			APlayerController* Controller = Cast<APlayerController>(Pawn->GetController());
+			if (Controller)
+			{
+				Controller->PlayHapticEffect(GrabHapticEffect, MotionController->GetTrackingSource());
+				SetGrabbableItem(Item);
+			}
+		}
+	}
 }
 
 void AKirbyHandController::HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-
+	AItem* Item = Cast<AItem>(OtherActor);
+	if (Item)
+	{
+		SetGrabbableItem(nullptr);
+	}
 }
 
