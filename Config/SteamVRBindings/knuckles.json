@@ -80,6 +80,28 @@
 					{
 						"click":
 						{
+							"output": "/actions/main/in/Teleport"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/left/input/trigger",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/CancelTeleport"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/left/input/grip",
+					"inputs":
+					{
+						"click":
+						{
 							"output": "/actions/main/in/TriggerRight"
 						}
 					}
