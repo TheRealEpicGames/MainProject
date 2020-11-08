@@ -16,6 +16,16 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 	public:
 
+		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Players)
+		TArray<class ANetworkedPlayerController*> PlayerControllerList;
+
+		UPROPERTY(BlueprintReadWrite, Category = Turn)
+		bool bIsFreeMovementAllowed;
+
+		// Represents the player's turn from the index of all player states
+		UPROPERTY(BlueprintReadOnly, Category = Turn)
+		uint8 CurrentPlayerTurn;
+
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
 		float MaxTurnTime;
 
@@ -30,6 +40,9 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+		void RegisterPlayers();
+
+		int32 PlayerTurnID;
 
 	public:
 
@@ -42,5 +55,15 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		UFUNCTION(BlueprintCallable)
 		void EndAllTurns();
 
-		
+		UFUNCTION(BlueprintCallable)
+		void ForceNextTurn();
+
+		UFUNCTION(BlueprintCallable)
+		bool IsActionAllowed(ANetworkedPlayerController* Controller);
+
+		UFUNCTION(BlueprintCallable)
+		int32 GetRemainingPlayerCount();
+
+		UFUNCTION(BlueprintCallable)
+		bool CheckGameOver();
 };
