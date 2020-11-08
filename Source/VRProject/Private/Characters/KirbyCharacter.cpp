@@ -12,6 +12,8 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Characters/GameplayActors/KirbyHandController.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -46,7 +48,9 @@ AKirbyCharacter::AKirbyCharacter()
 void AKirbyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Floor);
+
 	TeleportationMarker->SetVisibility(false);
 
 	LeftController = GetWorld()->SpawnActor<AKirbyHandController>(HandControllerClass);
