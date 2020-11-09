@@ -118,4 +118,13 @@ private:
 	void GrabLeftHand();
 
 	void GrabRightHand();
+
+	//UI Interaction Functions
+	void UILeftClickPressed();
+
+	void UILeftClickReleased();
+
+	void UIRightClickPressed();
+
+	void UIRightClickReleased();
 };
