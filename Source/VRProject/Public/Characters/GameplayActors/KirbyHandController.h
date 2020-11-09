@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MotionControllerComponent.h"
+#include "Components/WidgetInteractionComponent.h"
 #include "KirbyHandController.generated.h"
 
 UENUM(BlueprintType)
@@ -34,11 +35,20 @@ public:
 
 	void SetGripState(EGripState State) { GripState = State; UpdateAnimState(); }
 
+	void UsePointer();
+
+	void ReleasePointer();
+
+	void DeactivatePointer();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class USkeletalMeshComponent* HandMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemCollision")
 	class USphereComponent* BaseCollisionVolume;
+
+	UPROPERTY(VisibleAnywhere, Category = "UI Interaction")
+	UWidgetInteractionComponent* Pointer;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
 	EGripState GripState;
@@ -48,6 +58,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
 	class UHapticFeedbackEffect_Base* GrabHapticEffect;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
+	bool bPointerActive;
 
 protected:
 	// Called when the game starts or when spawned
@@ -69,5 +82,4 @@ private:
 	void HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	void UpdateAnimState();
-
 };

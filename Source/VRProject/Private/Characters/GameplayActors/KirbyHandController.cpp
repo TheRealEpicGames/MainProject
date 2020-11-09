@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Characters/GameplayActors/Animations/KirbyHandAnimInstance.h"
 #include "Components/SphereComponent.h"
+#include "InputCoreTypes.h"
 
 
 // Sets default values
@@ -26,7 +27,11 @@ AKirbyHandController::AKirbyHandController()
 	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
 	HandMesh->SetupAttachment(GetRootComponent());
 
+	Pointer = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Pointer"));
+	Pointer->SetupAttachment(GetRootComponent());
+
 	SetGripState(EGripState::EGS_Open);
+	bPointerActive = false;
 }
 
 void AKirbyHandController::SetGrabbableItem(AItem* Item)
@@ -55,6 +60,8 @@ void AKirbyHandController::BeginPlay()
 	
 	OnActorBeginOverlap.AddDynamic(this, &AKirbyHandController::HandBeginOverlap);
 	OnActorEndOverlap.AddDynamic(this, &AKirbyHandController::HandEndOverlap);
+
+	Pointer->SetActive(false);
 }
 
 // Called every frame
@@ -99,5 +106,33 @@ void AKirbyHandController::UpdateAnimState()
 	{
 		AnimInstance->GripState = GripState;
 	}
+}
+
+void AKirbyHandController::UsePointer()
+{
+	if (!bPointerActive)
+	{
+		Pointer->SetActive(true);
+		bPointerActive = true;
+	}
+	else
+	{
+		Pointer->PressPointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AKirbyHandController::ReleasePointer()
+{
+	if (bPointerActive)
+	{
+		Pointer->ReleasePointerKey(EKeys::LeftMouseButton);
+	}
+}
+
+void AKirbyHandController::DeactivatePointer()
+{
+	Pointer->ReleasePointerKey(EKeys::LeftMouseButton);
+	bPointerActive = false;
+	Pointer->SetActive(false);
 }
 
