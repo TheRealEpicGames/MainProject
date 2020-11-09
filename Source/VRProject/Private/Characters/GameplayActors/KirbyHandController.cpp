@@ -2,6 +2,13 @@
 
 
 #include "Characters/GameplayActors/KirbyHandController.h"
+#include "Items/Item.h"
+#include "GameFramework/Pawn.h"
+#include "GameFramework/PlayerController.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Characters/GameplayActors/Animations/KirbyHandAnimInstance.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -12,6 +19,33 @@ AKirbyHandController::AKirbyHandController()
 
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	SetRootComponent(MotionController);
+
+	BaseCollisionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("BaseCollisionVolume"));
+	BaseCollisionVolume->SetupAttachment(GetRootComponent());
+
+	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
+	HandMesh->SetupAttachment(GetRootComponent());
+
+	SetGripState(EGripState::EGS_Open);
+}
+
+void AKirbyHandController::SetGrabbableItem(AItem* Item)
+{
+	GrabbableItem = Item; 
+	if (GrabbableItem)
+	{
+		SetGripState(EGripState::EGS_CanGrab);
+	}
+	else
+	{
+		SetGripState(EGripState::EGS_Open);
+	}
+}
+
+void AKirbyHandController::GrabItem(AItem* Item)
+{
+	//TODO: Destroy Item, then add to inventory.
+	SetGripState(EGripState::EGS_Grab);
 }
 
 // Called when the game starts or when spawned
@@ -33,10 +67,37 @@ void AKirbyHandController::Tick(float DeltaTime)
 void AKirbyHandController::HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	//TODO: Query for Items for (Grab item on field functionality)
+	AItem* Item = Cast<AItem>(OtherActor);
+	if (Item)
+	{
+		APawn* Pawn = Cast<APawn>(GetAttachParentActor());
+		if (Pawn)
+		{
+			APlayerController* Controller = Cast<APlayerController>(Pawn->GetController());
+			if (Controller)
+			{
+				Controller->PlayHapticEffect(GrabHapticEffect, MotionController->GetTrackingSource());
+				SetGrabbableItem(Item);
+			}
+		}
+	}
 }
 
 void AKirbyHandController::HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
+	AItem* Item = Cast<AItem>(OtherActor);
+	if (Item)
+	{
+		SetGrabbableItem(nullptr);
+	}
+}
 
+void AKirbyHandController::UpdateAnimState()
+{
+	UKirbyHandAnimInstance* AnimInstance = Cast<UKirbyHandAnimInstance>(HandMesh->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->GripState = GripState;
+	}
 }
 

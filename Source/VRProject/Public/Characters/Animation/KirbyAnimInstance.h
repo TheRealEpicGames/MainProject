@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Characters/GameplayActors/KirbyHandController.h"
 #include "KirbyAnimInstance.generated.h"
 
 /**
@@ -26,4 +27,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Movement)
 	class AKirbyCharacter* Kirby;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Hands)
+	EGripState LeftGripState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Hands)
+	EGripState RightGripState;
 };

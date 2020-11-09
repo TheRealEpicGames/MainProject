@@ -27,13 +27,12 @@ void UKirbyAnimInstance::UpdateAnimationProperties()
 
 	if (Pawn)
 	{
-		
-
 		if (Kirby == nullptr)
 		{
 			Kirby = Cast<AKirbyCharacter>(Pawn);
 		}
 
-		
+		LeftGripState = Kirby->LeftController->GripState;
+		RightGripState = Kirby->RightController->GripState;
 	}
 }
