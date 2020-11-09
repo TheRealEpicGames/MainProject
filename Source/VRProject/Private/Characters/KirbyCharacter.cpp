@@ -59,6 +59,10 @@ void AKirbyCharacter::BeginPlay()
 		LeftController->AttachToComponent(VRRoot, FAttachmentTransformRules::KeepRelativeTransform);
 		LeftController->SetOwner(this);
 		LeftController->SetHand(EControllerHand::Left);
+
+		LeftController->HandMesh->SetWorldScale3D(FVector(1.f, 1.f, -1.f));
+		//FRotator HandRotation = FRotator(180.f, 0.f, 0.f);
+		//LeftController->HandMesh->SetRelativeRotation(HandRotation);
 	}
 
 	RightController = GetWorld()->SpawnActor<AKirbyHandController>(HandControllerClass);
@@ -90,7 +94,8 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	PlayerInputComponent->BindAction(TEXT("Teleport"), IE_Pressed, this, &AKirbyCharacter::BeginTeleport);
 	PlayerInputComponent->BindAction(TEXT("CancelTeleport"), IE_Pressed, this, &AKirbyCharacter::CancelTeleport);
-
+	PlayerInputComponent->BindAction(TEXT("GrabLeft"), IE_Pressed, this, &AKirbyCharacter::GrabLeftHand);
+	PlayerInputComponent->BindAction(TEXT("GrabRight"), IE_Pressed, this, &AKirbyCharacter::GrabRightHand);
 }
 
 void AKirbyCharacter::DecrementHealth(float Amount)
@@ -279,6 +284,22 @@ void AKirbyCharacter::StartFade(float FromAlpha, float ToAlpha)
 	if (PlayerController)
 	{
 		PlayerController->PlayerCameraManager->StartCameraFade(FromAlpha, ToAlpha, TeleportFadeDuration, FLinearColor::Black);
+	}
+}
+
+void AKirbyCharacter::GrabLeftHand()
+{
+	if (LeftController->GripState == EGripState::EGS_CanGrab)
+	{
+		LeftController->GrabItem(LeftController->GrabbableItem);
+	}
+}
+
+void AKirbyCharacter::GrabRightHand()
+{
+	if (RightController->GripState == EGripState::EGS_CanGrab)
+	{
+		RightController->GrabItem(RightController->GrabbableItem);
 	}
 }
 

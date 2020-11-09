@@ -113,4 +113,9 @@ private:
 	void UpdateTeleportMarker();
 
 	void StartFade(float FromAlpha, float ToAlpha);
+
+	//Grab Functions
+	void GrabLeftHand();
+
+	void GrabRightHand();
 };

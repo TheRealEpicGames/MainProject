@@ -32,6 +32,14 @@ public:
 
 	void GrabItem(class AItem* Item);
 
+	void SetGripState(EGripState State) { GripState = State; UpdateAnimState(); }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	class USkeletalMeshComponent* HandMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemCollision")
+	class USphereComponent* BaseCollisionVolume;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
 	EGripState GripState;
 
@@ -54,8 +62,12 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class UMotionControllerComponent* MotionController;
 
+	UFUNCTION()
 	void HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
+	UFUNCTION()
 	void HandEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	void UpdateAnimState();
 
 };

@@ -6,6 +6,9 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Haptics/HapticFeedbackEffect_Base.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Characters/GameplayActors/Animations/KirbyHandAnimInstance.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -17,7 +20,13 @@ AKirbyHandController::AKirbyHandController()
 	MotionController = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("MotionController"));
 	SetRootComponent(MotionController);
 
-	GripState = EGripState::EGS_Open;
+	BaseCollisionVolume = CreateDefaultSubobject<USphereComponent>(TEXT("BaseCollisionVolume"));
+	BaseCollisionVolume->SetupAttachment(GetRootComponent());
+
+	HandMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("HandMesh"));
+	HandMesh->SetupAttachment(GetRootComponent());
+
+	SetGripState(EGripState::EGS_Open);
 }
 
 void AKirbyHandController::SetGrabbableItem(AItem* Item)
@@ -25,17 +34,18 @@ void AKirbyHandController::SetGrabbableItem(AItem* Item)
 	GrabbableItem = Item; 
 	if (GrabbableItem)
 	{
-		GripState = EGripState::EGS_CanGrab;
+		SetGripState(EGripState::EGS_CanGrab);
 	}
 	else
 	{
-		GripState = EGripState::EGS_Open;
+		SetGripState(EGripState::EGS_Open);
 	}
 }
 
 void AKirbyHandController::GrabItem(AItem* Item)
 {
 	//TODO: Destroy Item, then add to inventory.
+	SetGripState(EGripState::EGS_Grab);
 }
 
 // Called when the game starts or when spawned
@@ -79,6 +89,15 @@ void AKirbyHandController::HandEndOverlap(AActor* OverlappedActor, AActor* Other
 	if (Item)
 	{
 		SetGrabbableItem(nullptr);
+	}
+}
+
+void AKirbyHandController::UpdateAnimState()
+{
+	UKirbyHandAnimInstance* AnimInstance = Cast<UKirbyHandAnimInstance>(HandMesh->GetAnimInstance());
+	if (AnimInstance)
+	{
+		AnimInstance->GripState = GripState;
 	}
 }
 
