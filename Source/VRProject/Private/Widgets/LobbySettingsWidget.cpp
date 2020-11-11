@@ -7,7 +7,7 @@
 
 ULobbySettingsWidget::ULobbySettingsWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	ChosenLevel = TEXT("TestLevel");
+	ChosenLevel = TEXT("Map1");
 }
 
 TSharedRef<SWidget> ULobbySettingsWidget::RebuildWidget()
