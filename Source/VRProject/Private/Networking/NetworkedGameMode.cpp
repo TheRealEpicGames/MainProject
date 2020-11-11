@@ -47,7 +47,7 @@ void ANetworkedGameMode::NextTurn()
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Next Turn");
 	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 	CurrentPlayerTurn++;
-	if (CurrentPlayerTurn == NetGameState->PlayerArray.Num())
+	if (CurrentPlayerTurn >= NetGameState->PlayerArray.Num())
 		CurrentPlayerTurn = 0;
 
 	
