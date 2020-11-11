@@ -33,6 +33,7 @@ public:
 
 	void GrabItem(class AItem* Item);
 
+	UFUNCTION(BlueprintCallable)
 	void SetGripState(EGripState State) { GripState = State; UpdateAnimState(); }
 
 	void UsePointer();
@@ -46,6 +47,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemCollision")
 	class USphereComponent* BaseCollisionVolume;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UMotionControllerComponent* MotionController;
 
 	UPROPERTY(VisibleAnywhere, Category = "UI Interaction")
 	UWidgetInteractionComponent* Pointer;
@@ -72,8 +76,7 @@ public:
 
 private:
 	//Default subobject
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	class UMotionControllerComponent* MotionController;
+	
 
 	UFUNCTION()
 	void HandBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);

@@ -51,6 +51,8 @@ void AKirbyHandController::GrabItem(AItem* Item)
 {
 	//TODO: Destroy Item, then add to inventory.
 	SetGripState(EGripState::EGS_Grab);
+
+
 }
 
 // Called when the game starts or when spawned
