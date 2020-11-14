@@ -27,7 +27,16 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		uint8 CurrentPlayerTurn;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
+		uint8 CurrentPlayerMaxTeleports;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
 		float MaxTurnTime;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
+		float PostActionTurnTime;
+
+		UPROPERTY(BlueprintReadOnly)
+		bool HasActionStarted;
 
 		FTimerHandle TurnHandle;
 
@@ -59,11 +68,26 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		void ForceNextTurn();
 
 		UFUNCTION(BlueprintCallable)
+		bool CheckAndConsumeMovement(ANetworkedPlayerController* Controller);
+
+		UFUNCTION(BlueprintCallable)
 		bool IsActionAllowed(ANetworkedPlayerController* Controller);
+
+		UFUNCTION(BlueprintCallable)
+		bool PerformAction(ANetworkedPlayerController* Controller);
 
 		UFUNCTION(BlueprintCallable)
 		int32 GetRemainingPlayerCount();
 
 		UFUNCTION(BlueprintCallable)
 		bool CheckGameOver();
+
+		UFUNCTION(BlueprintCallable)
+		void PlayerDied(ANetworkedPlayerController* Controller);
+
+		UFUNCTION()
+		void TriggerEndGame();
+
+		UFUNCTION(BlueprintCallable)
+		void PlayerLeft(APlayerController* Controller);
 };

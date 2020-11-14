@@ -7,10 +7,12 @@ ANetworkedPlayerState::ANetworkedPlayerState()
 {
 	bReplicates = true;
 	bIsPlayerDead = false;
+	NumAllowedMovements = 0;
 }
 
 void ANetworkedPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	// Here we list the variables we want to replicate + a condition if wanted
+
 	DOREPLIFETIME(ANetworkedPlayerState, bIsPlayerDead);
+	DOREPLIFETIME(ANetworkedPlayerState, NumAllowedMovements);
 }

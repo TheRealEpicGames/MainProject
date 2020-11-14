@@ -18,6 +18,9 @@ public:
 		UPROPERTY(Replicated, BlueprintReadWrite)
 		bool bIsPlayerDead;
 
+		UPROPERTY(Replicated, BlueprintReadWrite)
+		uint8 NumAllowedMovements;
+
 		ANetworkedPlayerState();
 
 		void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

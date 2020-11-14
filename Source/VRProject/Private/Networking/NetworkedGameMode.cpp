@@ -14,6 +14,7 @@ ANetworkedGameMode::ANetworkedGameMode() : Super()
 {
 	DefaultPawnClass = ATestMenuCharacterNoVR::StaticClass();
 	bUseSeamlessTravel = true;
+	CurrentPlayerMaxTeleports = 5;
 }
 
 void ANetworkedGameMode::BeginPlay()
@@ -21,6 +22,9 @@ void ANetworkedGameMode::BeginPlay()
 	Super::BeginPlay();
 	bIsFreeMovementAllowed = true;
 	PlayerTurnID = 0;
+	MaxTurnTime = 30.f;
+	PostActionTurnTime = 5.f;
+	HasActionStarted = false;
 }
 
 void ANetworkedGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -31,6 +35,19 @@ void ANetworkedGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 }
 
+/***********************************************************************************************************
+*
+*										TURN HANDLING METHODS
+*
+*
+************************************************************************************************************/
+
+
+
+
+/*
+* Starts the cycle of turns
+*/
 void ANetworkedGameMode::StartTurns()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Starting");
@@ -42,6 +59,9 @@ void ANetworkedGameMode::StartTurns()
 	NextTurn();
 }
 
+/*
+* Moves the turn to the next available player, and resets everyone's turn variables
+*/
 void ANetworkedGameMode::NextTurn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Next Turn");
@@ -50,18 +70,49 @@ void ANetworkedGameMode::NextTurn()
 	if (CurrentPlayerTurn >= NetGameState->PlayerArray.Num())
 		CurrentPlayerTurn = 0;
 
-	
-	PlayerTurnID = GameState->PlayerArray[CurrentPlayerTurn]->GetPlayerId();
+	// Handle that next player may be dead
+	ANetworkedPlayerState* NextState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[CurrentPlayerTurn]);
+	while(!NextState || NextState->bIsPlayerDead)
+	{
+		CurrentPlayerTurn++;
+		if (CurrentPlayerTurn >= NetGameState->PlayerArray.Num())
+			CurrentPlayerTurn = 0;
 
-	GetWorld()->GetTimerManager().SetTimer(TurnHandle, this, &ANetworkedGameMode::NextTurn, 20.f, false);
+		NextState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[CurrentPlayerTurn]);
+	}
+
+	PlayerTurnID = GameState->PlayerArray[CurrentPlayerTurn]->GetPlayerId();
+	HasActionStarted = false;
+
+	int i;
+	for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+	{
+		ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+		if (CurrState->GetPlayerId() == PlayerTurnID)
+		{
+			CurrState->NumAllowedMovements = CurrentPlayerMaxTeleports;
+		}
+		else
+		{
+			CurrState->NumAllowedMovements = 1;
+		}
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(TurnHandle, this, &ANetworkedGameMode::NextTurn, MaxTurnTime, false);
 }
 
+/*
+* Forces the turn to move immediately
+*/
 void ANetworkedGameMode::ForceNextTurn()
 {
 	GetWorld()->GetTimerManager().ClearTimer(TurnHandle);
 	NextTurn();
 }
 
+/*
+* Ends all turns
+*/
 void ANetworkedGameMode::EndAllTurns()
 {
 
@@ -70,10 +121,60 @@ void ANetworkedGameMode::EndAllTurns()
 }
 
 
+/***********************************************************************************************************
+*
+*										INPUT HANDLING METHODS
+*
+*
+************************************************************************************************************/
+
+/*
+* Reports whether a controller can perform some action, like firing a gun or equipping an item
+*/
 bool ANetworkedGameMode::IsActionAllowed(ANetworkedPlayerController* Controller)
 {
 	return bIsFreeMovementAllowed || Controller->PlayerState->GetPlayerId() == PlayerTurnID;
 }
+
+/*
+* Attempts to perform an action for the controller, reporting whether the action is either illegal or already performing
+* Moves the game to the Post-Action intermission before the next turn
+*/
+bool ANetworkedGameMode::PerformAction(ANetworkedPlayerController* Controller)
+{
+	if (!IsActionAllowed(Controller) || HasActionStarted)
+		return false;
+
+	GetWorld()->GetTimerManager().ClearTimer(TurnHandle);
+	GetWorld()->GetTimerManager().SetTimer(TurnHandle, this, &ANetworkedGameMode::NextTurn, PostActionTurnTime, false);
+
+	HasActionStarted = true;
+
+	return true;
+}
+
+/*
+* Reports if a player can perform a movement action, and updates their player state if possible
+*/
+bool ANetworkedGameMode::CheckAndConsumeMovement(ANetworkedPlayerController* Controller)
+{
+	ANetworkedPlayerState* PlayerState = Cast<ANetworkedPlayerState>(Controller->PlayerState);
+	if (PlayerState && PlayerState->NumAllowedMovements > 0)
+	{
+		PlayerState->NumAllowedMovements = PlayerState->NumAllowedMovements - 1;
+		return true;
+	}
+	return false;
+}
+
+
+/***********************************************************************************************************
+*
+*										WIN/LOSE/PLAYER STATUS METHODS
+*
+*
+************************************************************************************************************/
+
 
 int32 ANetworkedGameMode::GetRemainingPlayerCount()
 {
@@ -96,7 +197,34 @@ bool ANetworkedGameMode::CheckGameOver()
 	return GetRemainingPlayerCount() <= 1;
 }
 
+/*
+* Updates a given controller's player state to dead, and checks for a game over
+*/
+void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
+{
+	Cast<ANetworkedPlayerState>(Controller->PlayerState)->bIsPlayerDead = true;
 
+	// End match if game over
+	if (CheckGameOver())
+		TriggerEndGame();
+}
+
+/*
+* End of match function
+*/
+void ANetworkedGameMode::TriggerEndGame()
+{
+	EndAllTurns();
+}
+
+/*
+* Updates game mode data according to the controller of a leaving player
+*/
+void  ANetworkedGameMode::PlayerLeft(APlayerController* Controller)
+{
+	if (Controller->PlayerState->GetPlayerId() == PlayerTurnID)
+		ForceNextTurn();
+}
 
 
 
