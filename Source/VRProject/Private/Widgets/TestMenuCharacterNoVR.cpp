@@ -3,6 +3,7 @@
 
 #include "Widgets/TestMenuCharacterNoVR.h"
 #include "Components/WidgetInteractionComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ATestMenuCharacterNoVR::ATestMenuCharacterNoVR()
@@ -14,6 +15,8 @@ ATestMenuCharacterNoVR::ATestMenuCharacterNoVR()
 	WidgetInteractor->SetupAttachment(GetRootComponent());
 	WidgetInteractor->bShowDebug = true;
 	WidgetInteractor->InteractionDistance = 500.f;
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
@@ -86,4 +89,23 @@ void ATestMenuCharacterNoVR::Tilt(float magnitude)
 {
 	AddControllerPitchInput(magnitude * 45.f * GetWorld()->GetDeltaSeconds());
 	WidgetInteractor->AddLocalRotation(FRotator(-2 * magnitude * 45.f * GetWorld()->GetDeltaSeconds(), 0, 0));
+}
+
+void ATestMenuCharacterNoVR::EnableGhostStatus()
+{
+	bIsGhost = true;
+
+	//TODO change collision
+	
+}
+
+void ATestMenuCharacterNoVR::NotifyGhostStatusChanged_Implementation()
+{
+	APlayerController* LocalController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	ATestMenuCharacterNoVR* ControlledChar = LocalController->GetPawn<ATestMenuCharacterNoVR>();
+
+	if (!(IsLocallyControlled() || (ControlledChar && ControlledChar->bIsGhost)))
+	{
+		GetRootComponent()->SetVisibility(false);
+	}
 }

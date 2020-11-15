@@ -18,6 +18,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = WidgetInteraction)
 	class UWidgetInteractionComponent* WidgetInteractor;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStatus)
+	bool bIsGhost;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -35,4 +38,9 @@ public:
 	virtual void Tilt(float magnitude);
 	void LeftMousePress();
 	void LeftMouseRelease();
+
+	void EnableGhostStatus();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NotifyGhostStatusChanged();
 };

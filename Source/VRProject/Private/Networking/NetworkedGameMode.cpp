@@ -9,6 +9,7 @@
 #include "Networking/NetworkedPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/PlayerStart.h"
 
 ANetworkedGameMode::ANetworkedGameMode() : Super()
 {
@@ -25,6 +26,7 @@ void ANetworkedGameMode::BeginPlay()
 	MaxTurnTime = 30.f;
 	PostActionTurnTime = 5.f;
 	HasActionStarted = false;
+	GameInProgress = false;
 }
 
 void ANetworkedGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -54,6 +56,7 @@ void ANetworkedGameMode::StartTurns()
 
 	CurrentPlayerTurn = -1;
 	bIsFreeMovementAllowed = false;
+	GameInProgress = true;
 
 	// Make sure Turns start
 	NextTurn();
@@ -202,7 +205,24 @@ bool ANetworkedGameMode::CheckGameOver()
 */
 void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 {
+
+	if (!GameInProgress)
+		return;
+
 	Cast<ANetworkedPlayerState>(Controller->PlayerState)->bIsPlayerDead = true;
+
+
+	//TODO add same code for kirby character
+
+	ATestMenuCharacterNoVR* NewGhost;
+	if (GhostRespawnZone)
+		NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), 
+			GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
+	else
+		NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), FVector(), FRotator());
+
+	Controller->Possess(NewGhost);
+	NewGhost->EnableGhostStatus();
 
 	// End match if game over
 	if (CheckGameOver())
@@ -214,7 +234,12 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 */
 void ANetworkedGameMode::TriggerEndGame()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Game over!");
 	EndAllTurns();
+	bIsFreeMovementAllowed = true;
+	GameInProgress = false;
+
+	GetWorld()->ServerTravel(TEXT("Lobby"));
 }
 
 /*
@@ -225,6 +250,34 @@ void  ANetworkedGameMode::PlayerLeft(APlayerController* Controller)
 	if (Controller->PlayerState->GetPlayerId() == PlayerTurnID)
 		ForceNextTurn();
 }
+
+
+/***********************************************************************************************************
+*
+*										OTHER METHODS
+*
+*
+************************************************************************************************************/
+
+APlayerStart* ANetworkedGameMode::GetGhostSpawnZone()
+{
+	return GhostRespawnZone;
+}
+
+void ANetworkedGameMode::SetGhostSpawnZone(APlayerStart* NewRespawnZone)
+{
+	GhostRespawnZone = NewRespawnZone;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 

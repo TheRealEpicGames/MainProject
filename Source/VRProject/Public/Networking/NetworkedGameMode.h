@@ -19,6 +19,9 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Players)
 		TArray<class ANetworkedPlayerController*> PlayerControllerList;
 
+		UPROPERTY(BlueprintReadOnly)
+		class APlayerStart* GhostRespawnZone;
+
 		UPROPERTY(BlueprintReadWrite, Category = Turn)
 		bool bIsFreeMovementAllowed;
 
@@ -53,6 +56,8 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		int32 PlayerTurnID;
 
+		bool GameInProgress;
+
 	public:
 
 		UFUNCTION(BlueprintCallable)
@@ -84,6 +89,12 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		UFUNCTION(BlueprintCallable)
 		void PlayerDied(ANetworkedPlayerController* Controller);
+
+		UFUNCTION(BlueprintCallable)
+		APlayerStart* GetGhostSpawnZone();
+
+		UFUNCTION(BlueprintCallable)
+		void SetGhostSpawnZone(APlayerStart* NewRespawnZone);
 
 		UFUNCTION()
 		void TriggerEndGame();
