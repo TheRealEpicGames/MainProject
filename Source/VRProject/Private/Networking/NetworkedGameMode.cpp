@@ -59,7 +59,7 @@ void ANetworkedGameMode::StartTurns()
 	GameInProgress = true;
 
 	// Make sure Turns start
-	NextTurn();
+	CountdownStart(10);
 }
 
 /*
@@ -136,11 +136,14 @@ void ANetworkedGameMode::EndAllTurns()
 */
 bool ANetworkedGameMode::IsActionAllowed(ANetworkedPlayerController* Controller)
 {
-	ANetworkedPlayerState* PlayerState = Cast<ANetworkedPlayerState>(Controller->Player);
+	ANetworkedPlayerState* PlayerState = Cast<ANetworkedPlayerState>(Controller->PlayerState);
 	if (PlayerState)
 		return bIsFreeMovementAllowed || PlayerState->GetPlayerId() == PlayerTurnID || PlayerState->bIsPlayerDead;
 	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Uh oh");
 		return bIsFreeMovementAllowed;
+	}
 }
 
 /*
@@ -246,7 +249,11 @@ void ANetworkedGameMode::TriggerEndGame()
 	// Launch fireworks as victory until time to go back to lobby
 	LaunchFireworks();
 	GetWorld()->GetTimerManager().SetTimer(FireworkHandle, this, &ANetworkedGameMode::LaunchFireworks, 3, true);
-	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, this, &ANetworkedGameMode::ReturnToLobby, 20, false);
+
+	FTimerDelegate CountdownDel;
+	CountdownDel.BindUFunction(this, FName("CountdownEnd"), 10);
+
+	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, CountdownDel, 10, false);
 }
 
 /*
@@ -281,7 +288,38 @@ void ANetworkedGameMode::ReturnToLobby()
 	GetWorld()->ServerTravel(TEXT("Lobby"));
 }
 
+void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Countdown");
+	if (TimesRemaining <= 0)
+	{
+		NextTurn();
+	}
+	else
+	{
+		FTimerDelegate CountdownDel;
+		CountdownDel.BindUFunction(this, FName("CountdownStart"), TimesRemaining - 1);
 
+		GetWorld()->GetTimerManager().SetTimer(CountdownHandle, CountdownDel, 1, false);
+	}
+}
+
+
+void ANetworkedGameMode::CountdownEnd(uint8 TimesRemaining)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Countdown");
+	if (TimesRemaining <= 0)
+	{
+		ReturnToLobby();
+	}
+	else
+	{
+		FTimerDelegate CountdownDel;
+		CountdownDel.BindUFunction(this, FName("CountdownEnd"), TimesRemaining - 1);
+
+		GetWorld()->GetTimerManager().SetTimer(CountdownHandle, CountdownDel, 1, false);
+	}
+}
 
 
 

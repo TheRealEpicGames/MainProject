@@ -111,4 +111,10 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		UFUNCTION(BlueprintCallable)
 		void PlayerLeft(APlayerController* Controller);
+
+		UFUNCTION()
+		void CountdownStart(uint8 TimesRemaining);
+
+		UFUNCTION()
+		void CountdownEnd(uint8 TimesRemaining);
 };
