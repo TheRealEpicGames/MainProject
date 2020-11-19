@@ -136,7 +136,11 @@ void ANetworkedGameMode::EndAllTurns()
 */
 bool ANetworkedGameMode::IsActionAllowed(ANetworkedPlayerController* Controller)
 {
-	return bIsFreeMovementAllowed || Controller->PlayerState->GetPlayerId() == PlayerTurnID;
+	ANetworkedPlayerState* PlayerState = Cast<ANetworkedPlayerState>(Controller->Player);
+	if (PlayerState)
+		return bIsFreeMovementAllowed || PlayerState->GetPlayerId() == PlayerTurnID || PlayerState->bIsPlayerDead;
+	else
+		return bIsFreeMovementAllowed;
 }
 
 /*
@@ -145,7 +149,7 @@ bool ANetworkedGameMode::IsActionAllowed(ANetworkedPlayerController* Controller)
 */
 bool ANetworkedGameMode::PerformAction(ANetworkedPlayerController* Controller)
 {
-	if (!IsActionAllowed(Controller) || HasActionStarted)
+	if (!GameInProgress || !IsActionAllowed(Controller) || HasActionStarted)
 		return false;
 
 	GetWorld()->GetTimerManager().ClearTimer(TurnHandle);
