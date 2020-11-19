@@ -243,7 +243,10 @@ void ANetworkedGameMode::TriggerEndGame()
 	bIsFreeMovementAllowed = true;
 	GameInProgress = false;
 
-	GetWorld()->ServerTravel(TEXT("Lobby"));
+	// Launch fireworks as victory until time to go back to lobby
+	LaunchFireworks();
+	GetWorld()->GetTimerManager().SetTimer(FireworkHandle, this, &ANetworkedGameMode::LaunchFireworks, 3, true);
+	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, this, &ANetworkedGameMode::ReturnToLobby, 20, false);
 }
 
 /*
@@ -251,7 +254,7 @@ void ANetworkedGameMode::TriggerEndGame()
 */
 void  ANetworkedGameMode::PlayerLeft(APlayerController* Controller)
 {
-	if (Controller->PlayerState->GetPlayerId() == PlayerTurnID)
+	if (GameInProgress && Controller->PlayerState->GetPlayerId() == PlayerTurnID)
 		ForceNextTurn();
 }
 
@@ -273,9 +276,10 @@ void ANetworkedGameMode::SetGhostSpawnZone(APlayerStart* NewRespawnZone)
 	GhostRespawnZone = NewRespawnZone;
 }
 
-
-
-
+void ANetworkedGameMode::ReturnToLobby()
+{
+	GetWorld()->ServerTravel(TEXT("Lobby"));
+}
 
 
 

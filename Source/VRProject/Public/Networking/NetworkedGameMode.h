@@ -43,6 +43,10 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		FTimerHandle TurnHandle;
 
+		FTimerHandle CountdownHandle;
+
+		FTimerHandle FireworkHandle;
+
 		ANetworkedGameMode();
 
 
@@ -98,6 +102,12 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		UFUNCTION()
 		void TriggerEndGame();
+
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void LaunchFireworks();
+
+		UFUNCTION()
+		void ReturnToLobby();
 
 		UFUNCTION(BlueprintCallable)
 		void PlayerLeft(APlayerController* Controller);
