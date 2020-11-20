@@ -5,6 +5,7 @@
 #include "Networking/NetworkedGameInstance.h"
 #include "Networking/NetworkedGameState.h"
 #include "Networking/NetworkedPlayerState.h"
+#include "Characters/KirbyCharacter.h"
 #include "Widgets/TestMenuCharacterNoVR.h"
 #include "Networking/NetworkedPlayerController.h"
 #include "GameFramework/PlayerState.h"
@@ -191,12 +192,15 @@ int32 ANetworkedGameMode::GetRemainingPlayerCount()
 	int32 PlayersLeft = 0;
 	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 
-	int i;
-	for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+	if (NetGameState)
 	{
-		ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
-		if (CurrState && !CurrState->bIsPlayerDead)
-			PlayersLeft++;
+		int i;
+		for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+		{
+			ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+			if (CurrState && !CurrState->bIsPlayerDead)
+				PlayersLeft++;
+		}
 	}
 
 	return PlayersLeft;
@@ -216,10 +220,14 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 	if (!GameInProgress)
 		return;
 
-	Cast<ANetworkedPlayerState>(Controller->PlayerState)->bIsPlayerDead = true;
+	ANetworkedPlayerState* State = Cast<ANetworkedPlayerState>(Controller->PlayerState);
 
+	if (!State)
+		return;
+	else
+		State->bIsPlayerDead = true;
 
-	//TODO add same code for kirby character
+	// Create a ghost for the player and spawn it in
 
 	ATestMenuCharacterNoVR* NewGhost;
 	if (GhostRespawnZone)
@@ -227,6 +235,15 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 			GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
 	else
 		NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), FVector(), FRotator());
+
+	/*
+	AKirbyCharacter* NewGhost;
+	if (GhostRespawnZone)
+		NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(),
+			GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
+	else
+		NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(), FVector(), FRotator());
+	*/
 
 	Controller->Possess(NewGhost);
 	NewGhost->EnableGhostStatus();
@@ -242,17 +259,20 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 void ANetworkedGameMode::TriggerEndGame()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Game over!");
+
+	// End turns and trigger game end
 	EndAllTurns();
 	bIsFreeMovementAllowed = true;
 	GameInProgress = false;
+	OnGameEnd();
 
 	// Launch fireworks as victory until time to go back to lobby
 	LaunchFireworks();
 	GetWorld()->GetTimerManager().SetTimer(FireworkHandle, this, &ANetworkedGameMode::LaunchFireworks, 3, true);
 
+	// Perform countdown after certain time is elapsed
 	FTimerDelegate CountdownDel;
 	CountdownDel.BindUFunction(this, FName("CountdownEnd"), 10);
-
 	GetWorld()->GetTimerManager().SetTimer(CountdownHandle, CountdownDel, 10, false);
 }
 
@@ -268,7 +288,7 @@ void  ANetworkedGameMode::PlayerLeft(APlayerController* Controller)
 
 /***********************************************************************************************************
 *
-*										OTHER METHODS
+*										Spawn METHODS
 *
 *
 ************************************************************************************************************/
@@ -283,6 +303,44 @@ void ANetworkedGameMode::SetGhostSpawnZone(APlayerStart* NewRespawnZone)
 	GhostRespawnZone = NewRespawnZone;
 }
 
+void ANetworkedGameMode::RegisterPlayerSpawns(TArray<APlayerStart*> Spawns)
+{
+	PlayerSpawns = Spawns;
+}
+
+void ANetworkedGameMode::SpawnPlayers()
+{
+	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
+
+	if (NetGameState && PlayerSpawns.Num() >= NetGameState->PlayerArray.Num())
+	{
+		int i;
+		for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+		{
+			ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+			CurrState->bIsPlayerDead = false;
+			ANetworkedPlayerController* CurrController = CurrState->GetInstigatorController<ANetworkedPlayerController>();
+
+			if (CurrController)
+			{
+				ACharacter* Character = Cast<ACharacter>(CurrController->GetPawn());
+				if (Character)
+				{
+					APlayerStart* CurrentStart = PlayerSpawns[i];
+					Character->SetActorLocationAndRotation(CurrentStart->GetActorLocation(), CurrentStart->GetActorRotation());
+				}
+			}
+		}
+	}
+}
+
+/***********************************************************************************************************
+*
+*										OTHER METHODS
+*
+*
+************************************************************************************************************/
+
 void ANetworkedGameMode::ReturnToLobby()
 {
 	GetWorld()->ServerTravel(TEXT("Lobby"));
@@ -290,6 +348,7 @@ void ANetworkedGameMode::ReturnToLobby()
 
 void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
 {
+	OnCountdownUpdated(TimesRemaining);
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Countdown");
 	if (TimesRemaining <= 0)
 	{
@@ -308,6 +367,7 @@ void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
 void ANetworkedGameMode::CountdownEnd(uint8 TimesRemaining)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Countdown");
+	OnCountdownUpdated(TimesRemaining);
 	if (TimesRemaining <= 0)
 	{
 		ReturnToLobby();

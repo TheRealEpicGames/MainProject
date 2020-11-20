@@ -20,6 +20,9 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		TArray<class ANetworkedPlayerController*> PlayerControllerList;
 
 		UPROPERTY(BlueprintReadOnly)
+		TArray<APlayerStart*> PlayerSpawns;
+
+		UPROPERTY(BlueprintReadOnly)
 		class APlayerStart* GhostRespawnZone;
 
 		UPROPERTY(BlueprintReadWrite, Category = Turn)
@@ -47,9 +50,6 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		FTimerHandle FireworkHandle;
 
-		ANetworkedGameMode();
-
-
 	protected:
 		// Called when the game starts or when spawned
 		virtual void BeginPlay() override;
@@ -63,6 +63,8 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		bool GameInProgress;
 
 	public:
+
+		ANetworkedGameMode();
 
 		UFUNCTION(BlueprintCallable)
 		void StartTurns();
@@ -100,11 +102,23 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		UFUNCTION(BlueprintCallable)
 		void SetGhostSpawnZone(APlayerStart* NewRespawnZone);
 
+		UFUNCTION(BlueprintCallable)
+		void RegisterPlayerSpawns(TArray<APlayerStart*> Spawns);
+
+		UFUNCTION(BlueprintCallable)
+		void SpawnPlayers();
+
 		UFUNCTION()
 		void TriggerEndGame();
 
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void LaunchFireworks();
+
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void OnCountdownUpdated(uint8 TimesRemaining);
+
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void OnGameEnd();
 
 		UFUNCTION()
 		void ReturnToLobby();
