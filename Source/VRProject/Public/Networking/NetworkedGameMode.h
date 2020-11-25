@@ -108,6 +108,9 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		UFUNCTION(BlueprintCallable)
 		void SpawnPlayers();
 
+		UFUNCTION(BlueprintCallable)
+		void HandleAllSpawnSetup(APlayerStart* NewGhostZone);
+
 		UFUNCTION()
 		void TriggerEndGame();
 

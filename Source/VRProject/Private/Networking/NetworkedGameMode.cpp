@@ -228,25 +228,33 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 		State->bIsPlayerDead = true;
 
 	// Create a ghost for the player and spawn it in
+	if (DefaultPawnClass->IsChildOf(ATestMenuCharacterNoVR::StaticClass()))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Death");
+		ATestMenuCharacterNoVR* NewGhost;
+		if (GhostRespawnZone)
+			NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(),
+				GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
+		else
+			NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), FVector(), FRotator());
 
-	ATestMenuCharacterNoVR* NewGhost;
-	if (GhostRespawnZone)
-		NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), 
-			GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
-	else
-		NewGhost = GetWorld()->SpawnActor<ATestMenuCharacterNoVR>(ATestMenuCharacterNoVR::StaticClass(), FVector(), FRotator());
+		Controller->Possess(NewGhost);
+		NewGhost->EnableGhostStatus();
+	}
+	else if (DefaultPawnClass->IsChildOf(AKirbyCharacter::StaticClass()))
+	{
 
-	/*
-	AKirbyCharacter* NewGhost;
-	if (GhostRespawnZone)
-		NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(),
-			GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
-	else
-		NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(), FVector(), FRotator());
-	*/
+		AKirbyCharacter* NewGhost;
+		if (GhostRespawnZone)
+			NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(),
+				GhostRespawnZone->GetActorLocation(), GhostRespawnZone->GetActorRotation());
+		else
+			NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(), FVector(), FRotator());
 
-	Controller->Possess(NewGhost);
-	NewGhost->EnableGhostStatus();
+		Controller->Possess(NewGhost);
+		//NewGhost->EnableGhostStatus();
+	}
+	
 
 	// End match if game over
 	if (CheckGameOver())
@@ -293,6 +301,27 @@ void  ANetworkedGameMode::PlayerLeft(APlayerController* Controller)
 *
 ************************************************************************************************************/
 
+void ANetworkedGameMode::HandleAllSpawnSetup(APlayerStart* NewGhostZone)
+{
+	TArray<AActor*> SpawnActors;
+	SetGhostSpawnZone(NewGhostZone);
+	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), SpawnActors);
+
+	TArray<APlayerStart*> SpawnZones;
+	int i;
+	for ( i = 0; i < SpawnActors.Num(); i++)
+	{
+		APlayerStart* CurrZone = Cast<APlayerStart>(SpawnActors[i]);
+		if (CurrZone && CurrZone != NewGhostZone)
+		{
+			SpawnZones.Add(CurrZone);
+		}
+	}
+
+	RegisterPlayerSpawns(SpawnZones);
+	SpawnPlayers();
+}
+
 APlayerStart* ANetworkedGameMode::GetGhostSpawnZone()
 {
 	return GhostRespawnZone;
@@ -308,6 +337,9 @@ void ANetworkedGameMode::RegisterPlayerSpawns(TArray<APlayerStart*> Spawns)
 	PlayerSpawns = Spawns;
 }
 
+/*
+* Spawns all players at a random spawn point, given they all fit within the spawns
+*/
 void ANetworkedGameMode::SpawnPlayers()
 {
 	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
