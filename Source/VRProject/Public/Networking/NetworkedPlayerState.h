@@ -16,6 +16,9 @@ class VRPROJECT_API ANetworkedPlayerState : public APlayerState
 
 public:
 		UPROPERTY(Replicated, BlueprintReadWrite)
+		FString Username;
+
+		UPROPERTY(Replicated, BlueprintReadWrite)
 		bool bIsPlayerDead;
 
 		UPROPERTY(Replicated, BlueprintReadWrite)

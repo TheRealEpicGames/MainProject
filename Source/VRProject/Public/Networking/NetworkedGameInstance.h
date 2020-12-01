@@ -19,10 +19,7 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 	public:
 
 		UPROPERTY(BlueprintReadWrite)
-			bool bIsHostingLobby;
-
-		UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Players)
-		TArray<ANetworkedPlayerController*> PlayerControllerList;
+		FString PlayerName = TEXT("Default Player");
 
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void HostLobby();

@@ -18,6 +18,12 @@ public:
 		UFUNCTION(BlueprintCallable)
 		void KillThisPlayer();
 
+		UFUNCTION(BlueprintCallable, Client, Unreliable)
+		void ClientRegisterNameOfPlayer();
+
+		UFUNCTION(BlueprintCallable, Server, Unreliable)
+		void RegisterNameOnServer(const FString& Name);
+
 protected:
 	UFUNCTION(Server, Unreliable)
 		void KillOnServer();

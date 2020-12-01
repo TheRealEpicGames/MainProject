@@ -56,8 +56,6 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-		void RegisterPlayers();
-
 		int32 PlayerTurnID;
 
 		bool GameInProgress;
