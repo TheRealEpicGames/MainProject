@@ -43,4 +43,7 @@ public:
 
 	UFUNCTION(NetMulticast, Unreliable)
 	void NotifyGhostStatusChanged();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void UpdateName(const FString& NewName);
 };

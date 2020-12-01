@@ -53,7 +53,8 @@ void ANetworkedGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 */
 void ANetworkedGameMode::StartTurns()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Starting");
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Starting");
 
 	CurrentPlayerTurn = -1;
 	bIsFreeMovementAllowed = false;
@@ -68,7 +69,8 @@ void ANetworkedGameMode::StartTurns()
 */
 void ANetworkedGameMode::NextTurn()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Next Turn");
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Next Turn");
 	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 	CurrentPlayerTurn++;
 	if (CurrentPlayerTurn >= NetGameState->PlayerArray.Num())
@@ -227,6 +229,8 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 	else
 		State->bIsPlayerDead = true;
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, State->GetPlayerName());
+
 	// Create a ghost for the player and spawn it in
 	if (DefaultPawnClass->IsChildOf(ATestMenuCharacterNoVR::StaticClass()))
 	{
@@ -240,6 +244,7 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 
 		Controller->Possess(NewGhost);
 		NewGhost->EnableGhostStatus();
+		NewGhost->UpdateName(State->GetPlayerName());
 	}
 	else if (DefaultPawnClass->IsChildOf(AKirbyCharacter::StaticClass()))
 	{
@@ -414,37 +419,3 @@ void ANetworkedGameMode::CountdownEnd(uint8 TimesRemaining)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-//DONT USE, here for in case we need to get all controllers, but not the best for networking
-void ANetworkedGameMode::RegisterPlayers()
-{
-	TArray< AActor*> Controllers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ANetworkedPlayerController::StaticClass(), Controllers);
-
-	PlayerControllerList.Empty();
-
-	int i;
-	for (i = 0; i < Controllers.Num(); i++)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Trying add");
-		ANetworkedPlayerController* CurrentController = Cast< ANetworkedPlayerController>(Controllers[i]);
-		if (CurrentController)
-		{
-			PlayerControllerList.Add(CurrentController);
-		}
-		else
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Bad controller");
-		}
-
-	}
-}
