@@ -21,6 +21,9 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 		UPROPERTY(BlueprintReadWrite)
 		FString PlayerName = TEXT("Default Player");
 
+		UPROPERTY(BlueprintReadOnly)
+		FString WinningPlayer = TEXT("");
+
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void HostLobby();
 

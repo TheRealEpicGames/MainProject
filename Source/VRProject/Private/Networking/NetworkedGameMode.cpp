@@ -279,6 +279,24 @@ void ANetworkedGameMode::TriggerEndGame()
 	GameInProgress = false;
 	OnGameEnd();
 
+	UNetworkedGameInstance* NetGameInstance = GetGameInstance<UNetworkedGameInstance>();
+
+	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
+
+	if (NetGameState)
+	{
+		int i;
+		for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+		{
+			ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+			if (CurrState && !CurrState->bIsPlayerDead)
+			{
+				NetGameInstance->WinningPlayer = CurrState->GetPlayerName();
+			}
+		}
+	}
+
+
 	// Launch fireworks as victory until time to go back to lobby
 	LaunchFireworks();
 	GetWorld()->GetTimerManager().SetTimer(FireworkHandle, this, &ANetworkedGameMode::LaunchFireworks, 3, true);
