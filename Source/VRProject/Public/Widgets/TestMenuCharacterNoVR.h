@@ -39,6 +39,7 @@ public:
 	void LeftMousePress();
 	void LeftMouseRelease();
 
+	UFUNCTION(BlueprintCallable)
 	void EnableGhostStatus();
 
 	UFUNCTION(NetMulticast, Unreliable)

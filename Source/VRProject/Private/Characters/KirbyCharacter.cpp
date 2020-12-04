@@ -13,7 +13,8 @@
 #include "Components/SplineMeshComponent.h"
 #include "Characters/GameplayActors/KirbyHandController.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
-
+#include "Networking/NetworkedGameMode.h"
+#include "Networking/NetworkedPlayerController.h"
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -42,6 +43,9 @@ AKirbyCharacter::AKirbyCharacter()
 	TeleportProjectionExtent = FVector(100, 100, 100);
 
 	Health = 100.f;
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 }
 
 // Called when the game starts or when spawned
@@ -127,35 +131,33 @@ void AKirbyCharacter::Die()
 
 void AKirbyCharacter::BeginTeleport()
 {
-	if (!bTeleporting && CurrentNumOfTeleports > 0)
+	if (!bTeleporting) // && CurrentNumOfTeleports > 0)
 	{
 		GetWorldTimerManager().SetTimer(TeleportUpdateLocationHandle, this, &AKirbyCharacter::UpdateTeleportMarker, 0.02f, true);
 		bTeleporting = true;
 	}
 	else if(bTeleporting)
 	{
-		StartFade(0, 1);
+		// Teleport on server with current location
+		FVector ZOffset(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+		TeleportOnServer(TeleportationMarker->GetComponentLocation() + ZOffset);
 
-		FTimerHandle FadeHandle;
-		GetWorldTimerManager().SetTimer(FadeHandle, this, &AKirbyCharacter::EndTeleport, TeleportFadeDuration);
+		// Move this to client function, but call end teleport on server
+		//StartFade(0, 1);
+		//FTimerHandle FadeHandle;
+		//GetWorldTimerManager().SetTimer(FadeHandle, this, &AKirbyCharacter::EndTeleport, TeleportFadeDuration);
 	}
 
 }
 
 void AKirbyCharacter::EndTeleport()
 {
-	CurrentNumOfTeleports--;
+	//CurrentNumOfTeleports--;
+	//FVector ZOffset(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	//SetActorLocation(TeleportationMarker->GetComponentLocation() + ZOffset);
 
-	FVector ZOffset(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
-	SetActorLocation(TeleportationMarker->GetComponentLocation() + ZOffset);
-	bTeleporting = false;
-	TeleportationMarker->SetVisibility(false);
-	for (USplineMeshComponent* SplineMesh : TeleportPathMeshPool)
-	{
-		SplineMesh->SetVisibility(false);
-	}
-	GetWorldTimerManager().ClearTimer(TeleportUpdateLocationHandle);
-
+	// Cancel the teleport to signal end and fade back into view
+	CancelTeleport();
 	StartFade(1, 0);
 }
 
@@ -335,3 +337,70 @@ void AKirbyCharacter::UIRightClickReleased()
 	RightController->ReleasePointer();
 }
 
+// Tom's functions
+
+void AKirbyCharacter::EnableGhostStatus()
+{
+	bIsGhost = true;
+
+	NotifyGhostStatusChanged();
+
+}
+
+void AKirbyCharacter::NotifyGhostStatusChanged_Implementation()
+{
+	APlayerController* LocalController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	AKirbyCharacter* ControlledChar = LocalController->GetPawn<AKirbyCharacter>();
+
+	if (!IsLocallyControlled() && (ControlledChar && !ControlledChar->bIsGhost))
+	{
+		GetRootComponent()->SetVisibility(false, true);
+	}
+}
+
+void AKirbyCharacter::TeleportOnServer_Implementation(const FVector& Location)
+{
+
+	// If player is able to perform the movement
+	ANetworkedGameMode* NetGameMode = Cast<ANetworkedGameMode>(UGameplayStatics::GetGameMode(this));
+	if (NetGameMode && NetGameMode->CheckAndConsumeMovement(GetController<ANetworkedPlayerController>()))
+	{
+		// Tell client the teleport is a go
+		TeleportResponseClient();
+
+		// Perform teleport after same time as client fades
+		FTimerHandle TeleHandle;
+		FTimerDelegate TeleportDel;
+		TeleportDel.BindUFunction(this, FName("PerformTeleport"), Location);
+
+		GetWorld()->GetTimerManager().SetTimer(TeleHandle, TeleportDel, TeleportFadeDuration, false);
+	}
+}
+
+void AKirbyCharacter::TeleportResponseClient_Implementation()
+{
+	// Client simply performs fade and ending the teleport
+	StartFade(0, 1);
+
+	FTimerHandle FadeHandle;
+	GetWorldTimerManager().SetTimer(FadeHandle, this, &AKirbyCharacter::EndTeleport, TeleportFadeDuration);
+}
+
+void AKirbyCharacter::PerformTeleport(const FVector& Location)
+{
+	// Simple set location that should only happen on server, main function exists in case other functionality is needed
+	SetActorLocation(Location);
+}
+
+void AKirbyCharacter::PerformActionOnServer_Implementation()
+{
+	// If player is able to perform the movement
+	ANetworkedGameMode* NetGameMode = Cast<ANetworkedGameMode>(UGameplayStatics::GetGameMode(this));
+	ANetworkedPlayerController* NetController = GetController<ANetworkedPlayerController>();
+	if (NetGameMode && NetGameMode->IsActionAllowed(NetController))
+	{
+		NetGameMode->PerformAction(NetController);
+
+		//TODO add functionality for an action
+	}
+}

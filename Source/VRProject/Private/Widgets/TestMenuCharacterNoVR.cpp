@@ -95,7 +95,7 @@ void ATestMenuCharacterNoVR::EnableGhostStatus()
 {
 	bIsGhost = true;
 
-	//TODO change collision
+	NotifyGhostStatusChanged();
 	
 }
 
@@ -104,8 +104,25 @@ void ATestMenuCharacterNoVR::NotifyGhostStatusChanged_Implementation()
 	APlayerController* LocalController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	ATestMenuCharacterNoVR* ControlledChar = LocalController->GetPawn<ATestMenuCharacterNoVR>();
 
-	if (!(IsLocallyControlled() || (ControlledChar && ControlledChar->bIsGhost)))
+	// If not this player's character and this player isn't a ghost, make invisible
+	if (!IsLocallyControlled() && (ControlledChar && !ControlledChar->bIsGhost))
 	{
-		GetRootComponent()->SetVisibility(false);
+		GetRootComponent()->SetVisibility(false, true);
+	}
+
+	// If this player is a ghost, make all other ghosts visible
+	if (IsLocallyControlled())
+	{
+		TArray<AActor*> Actors;
+		UGameplayStatics::GetAllActorsOfClass(this, ATestMenuCharacterNoVR::StaticClass(), Actors);
+		
+		int i;
+		for (i = 0; i < Actors.Num(); i++)
+		{
+			if (Cast<ATestMenuCharacterNoVR>(Actors[i])->bIsGhost)
+			{
+				Actors[i]->GetRootComponent()->SetVisibility(true, true);
+			}
+		}
 	}
 }

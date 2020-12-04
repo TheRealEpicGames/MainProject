@@ -171,6 +171,9 @@ bool ANetworkedGameMode::PerformAction(ANetworkedPlayerController* Controller)
 */
 bool ANetworkedGameMode::CheckAndConsumeMovement(ANetworkedPlayerController* Controller)
 {
+	if (bIsFreeMovementAllowed)
+		return true;
+
 	ANetworkedPlayerState* PlayerState = Cast<ANetworkedPlayerState>(Controller->PlayerState);
 	if (PlayerState && PlayerState->NumAllowedMovements > 0)
 	{
@@ -229,8 +232,10 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 	else
 		State->bIsPlayerDead = true;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, State->GetPlayerName());
+	// Ghost spawning now in blueprints due to issues with BP versions of characters
+	OnPlayerDied(Controller);
 
+	/*
 	// Create a ghost for the player and spawn it in
 	if (DefaultPawnClass->IsChildOf(ATestMenuCharacterNoVR::StaticClass()))
 	{
@@ -257,8 +262,10 @@ void ANetworkedGameMode::PlayerDied(ANetworkedPlayerController* Controller)
 			NewGhost = GetWorld()->SpawnActor<AKirbyCharacter>(AKirbyCharacter::StaticClass(), FVector(), FRotator());
 
 		Controller->Possess(NewGhost);
-		//NewGhost->EnableGhostStatus();
+		NewGhost->EnableGhostStatus();
+		NewGhost->UpdateName(State->GetPlayerName());
 	}
+	*/
 	
 
 	// End match if game over

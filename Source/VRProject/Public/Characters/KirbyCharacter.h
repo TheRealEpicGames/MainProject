@@ -72,6 +72,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player | Health")
 	float Health;
 
+	// Tom's ghost properties
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStatus)
+	bool bIsGhost;
+
 private:
 
 	bool bTeleporting;
@@ -88,6 +92,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Tom's ghost methods
+	UFUNCTION(BlueprintCallable)
+	void EnableGhostStatus();
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void NotifyGhostStatusChanged();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void UpdateName(const FString& NewName);
+
+	UFUNCTION(BlueprintCallable)
+	void StartFade(float FromAlpha, float ToAlpha);
 
 private:
 	//Health Functions
@@ -112,8 +129,6 @@ private:
 
 	void UpdateTeleportMarker();
 
-	void StartFade(float FromAlpha, float ToAlpha);
-
 	//Grab Functions
 	void GrabLeftHand();
 
@@ -127,4 +142,16 @@ private:
 	void UIRightClickPressed();
 
 	void UIRightClickReleased();
+
+	// Network Teleport functions
+	UFUNCTION(Server, Unreliable)
+	void TeleportOnServer(const FVector& Location);
+
+	UFUNCTION(Client, Unreliable)
+	void TeleportResponseClient();
+
+	void PerformTeleport(const FVector& Location);
+
+	UFUNCTION(Server, Unreliable)
+	void PerformActionOnServer();
 };

@@ -113,6 +113,9 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		void TriggerEndGame();
 
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+		void OnPlayerDied(ANetworkedPlayerController* Controller);
+
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void LaunchFireworks();
 
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)

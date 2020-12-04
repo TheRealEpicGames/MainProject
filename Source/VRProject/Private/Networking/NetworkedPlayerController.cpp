@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Widgets/TestMenuCharacterNoVR.h"
+#include "Characters/KirbyCharacter.h"
 
 void ANetworkedPlayerController::KillThisPlayer()
 {
@@ -34,11 +35,17 @@ void ANetworkedPlayerController::RegisterNameOnServer_Implementation(const FStri
 	ANetworkedPlayerState* NetPlayerState = GetPlayerState<ANetworkedPlayerState>();
 	if(NetPlayerState)
 		NetPlayerState->SetPlayerName(Name);
+
+	AKirbyCharacter* Kirby = GetPawn<AKirbyCharacter>();
+	if (Kirby)
+	{
+		Kirby->UpdateName(Name);
+		return;
+	}
+
 	ATestMenuCharacterNoVR* TestCharacter = GetPawn<ATestMenuCharacterNoVR>();
 	if (TestCharacter)
 	{
 		TestCharacter->UpdateName(Name);
 	}
-
-	//TODO Add kirby implementation
 }
