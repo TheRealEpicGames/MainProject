@@ -90,4 +90,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void Release(AActor* GrabbingActor);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void Use(AActor* GrabbingActor);
+
 };

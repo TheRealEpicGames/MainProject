@@ -107,6 +107,8 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(TEXT("UIClickLeft"), IE_Released, this, &AKirbyCharacter::UILeftClickReleased);
 	PlayerInputComponent->BindAction(TEXT("UIClickRight"), IE_Pressed, this, &AKirbyCharacter::UIRightClickPressed);
 	PlayerInputComponent->BindAction(TEXT("UIClickRight"), IE_Released, this, &AKirbyCharacter::UIRightClickReleased);
+	PlayerInputComponent->BindAction(TEXT("TriggerRight"), IE_Pressed, this, &AKirbyCharacter::TriggerRightPressed);
+	PlayerInputComponent->BindAction(TEXT("TriggerLeft"), IE_Pressed, this, &AKirbyCharacter::TriggerLeftPressed);
 }
 
 void AKirbyCharacter::DecrementHealth(float Amount)
@@ -325,6 +327,22 @@ void AKirbyCharacter::ReleaseRightHand()
 	if (RightController->GripState == EGripState::EGS_Grab)
 	{
 		RightController->ReleaseItem(RightController->GrabbableItem);
+	}
+}
+
+void AKirbyCharacter::TriggerRightPressed()
+{
+	if (RightController->GripState == EGripState::EGS_Grab)
+	{
+		RightController->UseItem(RightController->GrabbedItem);
+	}
+}
+
+void AKirbyCharacter::TriggerLeftPressed()
+{
+	if (LeftController->GripState == EGripState::EGS_Grab)
+	{
+		LeftController->UseItem(LeftController->GrabbedItem);
 	}
 }
 
