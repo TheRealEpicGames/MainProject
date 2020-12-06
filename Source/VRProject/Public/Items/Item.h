@@ -84,6 +84,7 @@ public:
 	UFUNCTION()
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	UFUNCTION(BlueprintCallable)
-	virtual void Grab(AActor* GrabbingActor);
+	UFUNCTION(BlueprintNativeEvent)
+	void Grab(AActor* GrabbingActor);
+
 };

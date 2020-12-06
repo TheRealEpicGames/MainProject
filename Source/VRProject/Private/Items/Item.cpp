@@ -88,7 +88,7 @@ void AItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* Other
 
 }
 
-void AItem::Grab(AActor* GrabbingActor)
+void AItem::Grab_Implementation(AActor* GrabbingActor)
 {
 	//Default Behavior for Items (Intended to be overriden)
 	//Destroys original item and puts copy in inventory
@@ -96,7 +96,7 @@ void AItem::Grab(AActor* GrabbingActor)
 	if (Kirb)
 	{
 		AItem* CopiedItem = Kirb->InventorySystem->AddItemToInventory(this);
-		
+
 		//If item was successfully added and copied
 		if (CopiedItem != this)
 		{
