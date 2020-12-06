@@ -153,6 +153,7 @@ private:
 	UFUNCTION(Client, Unreliable)
 	void TeleportResponseClient();
 
+	UFUNCTION()
 	void PerformTeleport(const FVector& Location);
 
 	UFUNCTION(Server, Unreliable)
