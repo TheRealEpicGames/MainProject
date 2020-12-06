@@ -37,6 +37,8 @@ public:
 
 	void ReleaseItem(class AItem* Item);
 
+	void UseItem(class AItem* Item);
+
 	UFUNCTION(BlueprintCallable)
 	void SetGripState(EGripState State) { GripState = State; UpdateAnimState(); }
 

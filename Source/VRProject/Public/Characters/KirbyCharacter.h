@@ -144,6 +144,10 @@ private:
 
 	void ReleaseRightHand();
 
+	void TriggerRightPressed();
+
+	void TriggerLeftPressed();
+
 	//UI Interaction Functions
 	void UILeftClickPressed();
 

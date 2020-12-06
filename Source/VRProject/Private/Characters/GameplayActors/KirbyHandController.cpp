@@ -75,6 +75,11 @@ void AKirbyHandController::ReleaseItem(AItem* Item)
 	Item->Release(this);
 }
 
+void AKirbyHandController::UseItem(AItem* Item)
+{
+	Item->Use(this);
+}
+
 // Called when the game starts or when spawned
 void AKirbyHandController::BeginPlay()
 {
