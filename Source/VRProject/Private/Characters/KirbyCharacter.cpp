@@ -371,7 +371,7 @@ void AKirbyCharacter::TeleportOnServer_Implementation(const FVector& Location)
 		// Perform teleport after same time as client fades
 		FTimerHandle TeleHandle;
 		FTimerDelegate TeleportDel;
-		TeleportDel.BindUFunction(this, FName("PerformTeleport"), Location);
+		TeleportDel.BindUFunction(this, FName("SetActorLocation"), Location);
 
 		GetWorld()->GetTimerManager().SetTimer(TeleHandle, TeleportDel, TeleportFadeDuration, false);
 	}
