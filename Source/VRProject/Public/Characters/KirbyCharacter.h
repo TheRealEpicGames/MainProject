@@ -109,6 +109,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartFade(float FromAlpha, float ToAlpha);
 
+	UFUNCTION()
+	void PerformTeleport(const FVector& Location);
+
 private:
 	//Health Functions
 	void DecrementHealth(float Amount);
@@ -152,9 +155,6 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void TeleportResponseClient();
-
-	UFUNCTION()
-	void PerformTeleport(const FVector& Location);
 
 	UFUNCTION(Server, Unreliable)
 	void PerformActionOnServer();
