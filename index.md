@@ -9,13 +9,14 @@ Fortnite 2 will be released on December 9th, 2020 by The Real Epic Games based o
 ### Game Images
 
 ### Features
-- 
+- Fully destructible voxel-based terrain
+- Connect and play networked multiplayer
+- Turn based Worms-style gameplay
 
-
-## About The Real Epic Games
+# About The Real Epic Games
 Hello! We're The Real Epic Games. The Real One. Any others claiming to be under the name Epic Games are imposters and should be reported to the nearest authority. A few points of interest:
-- We're a group of 6 Computer Science Majors at the University of Utah- Thomas Ady, Tyler Trombley, Tom Nguyen, Garrett Moseke, Colton Lee, and Michael Ratajczyk
-- Colton and Tyler began the group, quickly expanding to include Tom and Thomas. Garrett and Thomas had previously worked together at the University, and were invited to join along with Michael.
+- We're a group of 6 Computer Science students at the University of Utah- Thomas Ady, Tyler Trombley, Tom Nguyen, Garrett Moseke, Colton Lee, and Michael Ratajczyk
+- Colton and Tyler began the group, quickly expanding to include Tom and Thomas. Garrett had previously worked together at the University with Thomas, and was invited to join along with Michael.
 - The idea for Fortnite 2 came about when discussing the Worms games and the idea of requiring players to actually phyiscally aim their weapons in VR, and the idea took off from there.
 
 ### Credits
