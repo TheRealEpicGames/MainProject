@@ -37,6 +37,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
 	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	class UInventorySystemComponent* InventorySystem;
+
 	//Teleportation Properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	float TeleportProjectileSpeed;

@@ -7,6 +7,8 @@
 #include "Sound/SoundCue.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Characters/KirbyCharacter.h"
+#include "Characters/Components/InventorySystemComponent.h"
 
 // Sets default values
 AItem::AItem()
@@ -26,6 +28,12 @@ AItem::AItem()
 	bIdleParticleActive = false;
 	bRotate = false;
 	RotationRate = 45.f;
+
+	CurrentItemState = EItemState::EIS_Pickup;
+	ItemID = TEXT("DefaultItem");
+	bCanStack = true;
+	MaxStackCapacity = 5; //Arbitrary default number. Subject to change.
+	bEquipable = true;
 }
 
 // Called when the game starts or when spawned
@@ -56,17 +64,44 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnOverlapBegin()"));
 
-	if (OverlapParticles)
+	if (CurrentItemState == EItemState::EIS_Pickup && OtherActor)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorLocation(), FRotator(0.0f), true);
-	}
-	if (OverlapSound)
-	{
-		UGameplayStatics::PlaySound2D(this, OverlapSound);
+		ACharacter* Char = Cast<ACharacter>(OtherActor);
+		if (Char)
+		{
+
+			if (OverlapParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorLocation(), FRotator(0.0f), true);
+			}
+			if (OverlapSound)
+			{
+				UGameplayStatics::PlaySound2D(this, OverlapSound);
+			}
+		}
 	}
 }
 
 void AItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnOverlapEnd()"));
+
+}
+
+void AItem::Grab(AActor* GrabbingActor)
+{
+	//Default Behavior for Items (Intended to be overriden)
+	//Destroys original item and puts copy in inventory
+	AKirbyCharacter* Kirb = Cast<AKirbyCharacter>(GrabbingActor);
+	if (Kirb)
+	{
+		AItem* CopiedItem = Kirb->InventorySystem->AddItemToInventory(this);
+		
+		//If item was successfully added and copied
+		if (CopiedItem != this)
+		{
+			//TODO: Spawn emitter for visual of inventory added 
+			Destroy();
+		}
+	}
 }

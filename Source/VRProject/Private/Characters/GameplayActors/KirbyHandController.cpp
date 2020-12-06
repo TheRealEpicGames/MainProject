@@ -10,6 +10,7 @@
 #include "Characters/GameplayActors/Animations/KirbyHandAnimInstance.h"
 #include "Components/SphereComponent.h"
 #include "InputCoreTypes.h"
+#include "Characters/KirbyCharacter.h"
 
 
 // Sets default values
@@ -52,7 +53,7 @@ void AKirbyHandController::GrabItem(AItem* Item)
 	//TODO: Destroy Item, then add to inventory.
 	SetGripState(EGripState::EGS_Grab);
 
-
+	Item->Grab(GetOwner());
 }
 
 // Called when the game starts or when spawned
