@@ -101,6 +101,8 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(TEXT("CancelTeleport"), IE_Pressed, this, &AKirbyCharacter::CancelTeleport);
 	PlayerInputComponent->BindAction(TEXT("GrabLeft"), IE_Pressed, this, &AKirbyCharacter::GrabLeftHand);
 	PlayerInputComponent->BindAction(TEXT("GrabRight"), IE_Pressed, this, &AKirbyCharacter::GrabRightHand);
+	PlayerInputComponent->BindAction(TEXT("GrabLeft"), IE_Released, this, &AKirbyCharacter::ReleaseLeftHand);
+	PlayerInputComponent->BindAction(TEXT("GrabRight"), IE_Released, this, &AKirbyCharacter::ReleaseRightHand);
 	PlayerInputComponent->BindAction(TEXT("UIClickLeft"), IE_Pressed, this, &AKirbyCharacter::UILeftClickPressed);
 	PlayerInputComponent->BindAction(TEXT("UIClickLeft"), IE_Released, this, &AKirbyCharacter::UILeftClickReleased);
 	PlayerInputComponent->BindAction(TEXT("UIClickRight"), IE_Pressed, this, &AKirbyCharacter::UIRightClickPressed);
@@ -307,6 +309,22 @@ void AKirbyCharacter::GrabRightHand()
 	if (RightController->GripState == EGripState::EGS_CanGrab)
 	{
 		RightController->GrabItem(RightController->GrabbableItem);
+	}
+}
+
+void AKirbyCharacter::ReleaseLeftHand()
+{
+	if (LeftController->GripState == EGripState::EGS_Grab)
+	{
+		LeftController->ReleaseItem(LeftController->GrabbedItem);
+	}
+}
+
+void AKirbyCharacter::ReleaseRightHand()
+{
+	if (RightController->GripState == EGripState::EGS_Grab)
+	{
+		RightController->ReleaseItem(RightController->GrabbableItem);
 	}
 }
 

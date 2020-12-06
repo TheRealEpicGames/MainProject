@@ -48,12 +48,31 @@ void AKirbyHandController::SetGrabbableItem(AItem* Item)
 	}
 }
 
+void AKirbyHandController::SetGrabbedItem(AItem* Item)
+{
+	GrabbedItem = Item;
+	if (GrabbedItem)
+	{
+		SetGripState(EGripState::EGS_Grab);
+	}
+	else
+	{
+		SetGripState(EGripState::EGS_Open);
+	}
+}
+
 void AKirbyHandController::GrabItem(AItem* Item)
 {
-	//TODO: Destroy Item, then add to inventory.
-	SetGripState(EGripState::EGS_Grab);
+	SetGrabbedItem(Item);
 
 	Item->Grab(GetOwner());
+}
+
+void AKirbyHandController::ReleaseItem(AItem* Item)
+{
+	SetGrabbedItem(nullptr);
+
+	Item->Release(this);
 }
 
 // Called when the game starts or when spawned

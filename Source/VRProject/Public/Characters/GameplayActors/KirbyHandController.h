@@ -31,7 +31,11 @@ public:
 
 	void SetGrabbableItem(class AItem* Item);
 
+	void SetGrabbedItem(class AItem* Item);
+
 	void GrabItem(class AItem* Item);
+
+	void ReleaseItem(class AItem* Item);
 
 	UFUNCTION(BlueprintCallable)
 	void SetGripState(EGripState State) { GripState = State; UpdateAnimState(); }
@@ -59,6 +63,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
 	class AItem* GrabbableItem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
+	class AItem* GrabbedItem;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Parameters")
 	class UHapticFeedbackEffect_Base* GrabHapticEffect;

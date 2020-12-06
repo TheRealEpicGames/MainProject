@@ -140,6 +140,10 @@ private:
 
 	void GrabRightHand();
 
+	void ReleaseLeftHand();
+
+	void ReleaseRightHand();
+
 	//UI Interaction Functions
 	void UILeftClickPressed();
 

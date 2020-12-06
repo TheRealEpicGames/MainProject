@@ -105,3 +105,8 @@ void AItem::Grab_Implementation(AActor* GrabbingActor)
 		}
 	}
 }
+
+void AItem::Release_Implementation(AActor* GrabbingActor)
+{
+	//Default behavior inserted here
+}
