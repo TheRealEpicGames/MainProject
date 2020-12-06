@@ -53,7 +53,7 @@ void AKirbyHandController::GrabItem(AItem* Item)
 	//TODO: Destroy Item, then add to inventory.
 	SetGripState(EGripState::EGS_Grab);
 
-	Item->Grab(GetOwner());
+	Item->Grab(this);
 }
 
 // Called when the game starts or when spawned
