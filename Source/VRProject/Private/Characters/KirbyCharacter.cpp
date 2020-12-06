@@ -15,6 +15,7 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Networking/NetworkedGameMode.h"
 #include "Networking/NetworkedPlayerController.h"
+#include "Characters/Components/InventorySystemComponent.h"
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -33,6 +34,8 @@ AKirbyCharacter::AKirbyCharacter()
 
 	TeleportPath = CreateDefaultSubobject<USplineComponent>(TEXT("TeleportPath"));
 	TeleportPath->SetupAttachment(VRRoot);
+
+	InventorySystem = CreateDefaultSubobject<UInventorySystemComponent>(TEXT("InventorySystem"));
 
 	TeleportProjectileSpeed = 700.f;
 	TeleportProjectileRadius = 10.f;
@@ -96,8 +99,8 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	PlayerInputComponent->BindAction(TEXT("Teleport"), IE_Pressed, this, &AKirbyCharacter::BeginTeleport);
 	PlayerInputComponent->BindAction(TEXT("CancelTeleport"), IE_Pressed, this, &AKirbyCharacter::CancelTeleport);
-	//PlayerInputComponent->BindAction(TEXT("GrabLeft"), IE_Pressed, this, &AKirbyCharacter::GrabLeftHand);
-	//PlayerInputComponent->BindAction(TEXT("GrabRight"), IE_Pressed, this, &AKirbyCharacter::GrabRightHand);
+	PlayerInputComponent->BindAction(TEXT("GrabLeft"), IE_Pressed, this, &AKirbyCharacter::GrabLeftHand);
+	PlayerInputComponent->BindAction(TEXT("GrabRight"), IE_Pressed, this, &AKirbyCharacter::GrabRightHand);
 	PlayerInputComponent->BindAction(TEXT("UIClickLeft"), IE_Pressed, this, &AKirbyCharacter::UILeftClickPressed);
 	PlayerInputComponent->BindAction(TEXT("UIClickLeft"), IE_Released, this, &AKirbyCharacter::UILeftClickReleased);
 	PlayerInputComponent->BindAction(TEXT("UIClickRight"), IE_Pressed, this, &AKirbyCharacter::UIRightClickPressed);
