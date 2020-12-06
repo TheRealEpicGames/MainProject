@@ -92,7 +92,7 @@ void AItem::Grab_Implementation(AActor* GrabbingActor)
 {
 	//Default Behavior for Items (Intended to be overriden)
 	//Destroys original item and puts copy in inventory
-	AKirbyCharacter* Kirb = Cast<AKirbyCharacter>(GrabbingActor);
+	AKirbyCharacter* Kirb = Cast<AKirbyCharacter>(GrabbingActor->GetOwner());
 	if (Kirb)
 	{
 		AItem* CopiedItem = Kirb->InventorySystem->AddItemToInventory(this);

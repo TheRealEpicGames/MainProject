@@ -65,7 +65,7 @@ void AKirbyHandController::GrabItem(AItem* Item)
 {
 	SetGrabbedItem(Item);
 
-	Item->Grab(GetOwner());
+	Item->Grab(this);
 }
 
 void AKirbyHandController::ReleaseItem(AItem* Item)
