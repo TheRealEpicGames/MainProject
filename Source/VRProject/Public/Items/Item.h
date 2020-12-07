@@ -6,6 +6,16 @@
 #include "GameFramework/Actor.h"
 #include "Item.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemState :uint8
+{
+	EIS_Pickup UMETA(DisplayName = "Pickup"),
+	EIS_Equipped UMETA(DisplayName = "Equipped"),
+	EIS_Inventory UMETA(DisplayName = "Inventory"),
+
+	EIS_MAX UMETA(DisplayName = "DefaultMax")
+};
+
 UCLASS()
 class VRPROJECT_API AItem : public AActor
 {
@@ -45,6 +55,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Properties")
 	float RotationRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Interaction")
+	EItemState CurrentItemState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Interaction")
+	FName ItemID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Interaction")
+	bool bCanStack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Interaction")
+	bool bEquipable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Interaction")
+	int MaxStackCapacity;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -59,5 +84,13 @@ public:
 	UFUNCTION()
 	virtual void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void Grab(AActor* GrabbingActor);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void Release(AActor* GrabbingActor);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void Use(AActor* GrabbingActor);
 
 };

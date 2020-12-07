@@ -37,6 +37,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Teleportation")
 	TArray<class USplineMeshComponent*> TeleportPathMeshPool;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	class UInventorySystemComponent* InventorySystem;
+
 	//Teleportation Properties
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teleportation")
 	float TeleportProjectileSpeed;
@@ -106,6 +109,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartFade(float FromAlpha, float ToAlpha);
 
+	UFUNCTION()
+	void PerformTeleport(const FVector& Location);
+
 private:
 	//Health Functions
 	void DecrementHealth(float Amount);
@@ -134,6 +140,14 @@ private:
 
 	void GrabRightHand();
 
+	void ReleaseLeftHand();
+
+	void ReleaseRightHand();
+
+	void TriggerRightPressed();
+
+	void TriggerLeftPressed();
+
 	//UI Interaction Functions
 	void UILeftClickPressed();
 
@@ -149,8 +163,6 @@ private:
 
 	UFUNCTION(Client, Unreliable)
 	void TeleportResponseClient();
-
-	void PerformTeleport(const FVector& Location);
 
 	UFUNCTION(Server, Unreliable)
 	void PerformActionOnServer();

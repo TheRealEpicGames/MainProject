@@ -10,6 +10,7 @@
 #include "Characters/GameplayActors/Animations/KirbyHandAnimInstance.h"
 #include "Components/SphereComponent.h"
 #include "InputCoreTypes.h"
+#include "Characters/KirbyCharacter.h"
 
 
 // Sets default values
@@ -47,12 +48,36 @@ void AKirbyHandController::SetGrabbableItem(AItem* Item)
 	}
 }
 
+void AKirbyHandController::SetGrabbedItem(AItem* Item)
+{
+	GrabbedItem = Item;
+	if (GrabbedItem)
+	{
+		SetGripState(EGripState::EGS_Grab);
+	}
+	else
+	{
+		SetGripState(EGripState::EGS_Open);
+	}
+}
+
 void AKirbyHandController::GrabItem(AItem* Item)
 {
-	//TODO: Destroy Item, then add to inventory.
-	SetGripState(EGripState::EGS_Grab);
+	SetGrabbedItem(Item);
 
+	Item->Grab(this);
+}
 
+void AKirbyHandController::ReleaseItem(AItem* Item)
+{
+	SetGrabbedItem(nullptr);
+
+	Item->Release(this);
+}
+
+void AKirbyHandController::UseItem(AItem* Item)
+{
+	Item->Use(this);
 }
 
 // Called when the game starts or when spawned
