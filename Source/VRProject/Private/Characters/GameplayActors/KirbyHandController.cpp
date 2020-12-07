@@ -11,6 +11,7 @@
 #include "Components/SphereComponent.h"
 #include "InputCoreTypes.h"
 #include "Characters/KirbyCharacter.h"
+#include "Components/WidgetComponent.h"
 
 
 // Sets default values
@@ -31,8 +32,12 @@ AKirbyHandController::AKirbyHandController()
 	Pointer = CreateDefaultSubobject<UWidgetInteractionComponent>(TEXT("Pointer"));
 	Pointer->SetupAttachment(GetRootComponent());
 
+	InventoryMenu = CreateDefaultSubobject<UWidgetComponent>(TEXT("InventoryMenu"));
+	InventoryMenu->SetupAttachment(GetRootComponent());
+
 	SetGripState(EGripState::EGS_Open);
 	bPointerActive = false;
+	bInventoryMenuActive = false;
 }
 
 void AKirbyHandController::SetGrabbableItem(AItem* Item)
@@ -89,6 +94,8 @@ void AKirbyHandController::BeginPlay()
 	OnActorEndOverlap.AddDynamic(this, &AKirbyHandController::HandEndOverlap);
 
 	Pointer->SetActive(false);
+
+	InventoryMenu->SetActive(false);
 }
 
 // Called every frame
@@ -161,5 +168,16 @@ void AKirbyHandController::DeactivatePointer()
 	Pointer->ReleasePointerKey(EKeys::LeftMouseButton);
 	bPointerActive = false;
 	Pointer->SetActive(false);
+}
+
+void AKirbyHandController::OpenInventoryMenu()
+{
+	InventoryMenuOpened();
+	InventoryMenu->SetActive(true);
+}
+
+void AKirbyHandController::CloseInventoryMenu()
+{
+	InventoryMenu->SetActive(false);
 }
 

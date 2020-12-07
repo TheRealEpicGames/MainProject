@@ -79,6 +79,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStatus)
 	bool bIsGhost;
 
+	//UI Properties
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	bool bIsPointerActive;
+
 private:
 
 	bool bTeleporting;
