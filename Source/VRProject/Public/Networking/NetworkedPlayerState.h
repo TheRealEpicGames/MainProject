@@ -22,6 +22,9 @@ public:
 		bool bIsPlayerDead;
 
 		UPROPERTY(Replicated, BlueprintReadWrite)
+		bool bIsPlayerTurn;
+
+		UPROPERTY(Replicated, BlueprintReadWrite)
 		uint8 NumAllowedMovements;
 
 		ANetworkedPlayerState();

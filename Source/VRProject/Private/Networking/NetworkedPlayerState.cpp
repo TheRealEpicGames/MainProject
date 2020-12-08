@@ -9,6 +9,7 @@ ANetworkedPlayerState::ANetworkedPlayerState()
 	Username = "User0";
 	bReplicates = true;
 	bIsPlayerDead = false;
+	bIsPlayerTurn = false;
 	NumAllowedMovements = 0;
 }
 
@@ -16,6 +17,7 @@ void ANetworkedPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ANetworkedPlayerState, bIsPlayerDead);
+	DOREPLIFETIME(ANetworkedPlayerState, bIsPlayerTurn);
 	DOREPLIFETIME(ANetworkedPlayerState, Username);
 	DOREPLIFETIME(ANetworkedPlayerState, NumAllowedMovements);
 }

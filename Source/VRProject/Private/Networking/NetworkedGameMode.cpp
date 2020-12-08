@@ -98,10 +98,12 @@ void ANetworkedGameMode::NextTurn()
 		if (CurrState->GetPlayerId() == PlayerTurnID)
 		{
 			CurrState->NumAllowedMovements = CurrentPlayerMaxTeleports;
+			CurrState->bIsPlayerTurn = true;
 		}
 		else
 		{
 			CurrState->NumAllowedMovements = 1;
+			CurrState->bIsPlayerTurn = false;
 		}
 	}
 
@@ -125,6 +127,14 @@ void ANetworkedGameMode::EndAllTurns()
 
 	// Make sure all timers are stopped
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
+
+	int i;
+	for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+	{
+		ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+		CurrState->bIsPlayerTurn = false;
+	}
 }
 
 
