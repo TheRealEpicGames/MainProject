@@ -80,7 +80,7 @@ public:
 	bool bIsGhost;
 
 	//UI Properties
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "UI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	bool bIsPointerActive;
 
 private:
