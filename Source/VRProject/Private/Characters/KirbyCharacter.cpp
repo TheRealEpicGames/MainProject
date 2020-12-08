@@ -139,8 +139,11 @@ void AKirbyCharacter::Die()
 
 void AKirbyCharacter::BeginTeleport()
 {
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "FUCK THIS");
 	if (!bTeleporting) // && CurrentNumOfTeleports > 0)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("TeleportActive"));
 		GetWorldTimerManager().SetTimer(TeleportUpdateLocationHandle, this, &AKirbyCharacter::UpdateTeleportMarker, 0.02f, true);
 		bTeleporting = true;
 	}

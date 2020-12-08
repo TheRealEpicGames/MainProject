@@ -11,6 +11,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "Characters/GameplayActors/KirbyHandController.h"
 
 ANetworkedGameMode::ANetworkedGameMode() : Super()
 {
@@ -348,6 +349,9 @@ void ANetworkedGameMode::HandleAllSpawnSetup(APlayerStart* NewGhostZone)
 		}
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Spawn Zones: %d"), SpawnZones.Num()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Spawn Actors: %d"), SpawnActors.Num()));
+
 	RegisterPlayerSpawns(SpawnZones);
 	SpawnPlayers();
 }
@@ -372,8 +376,15 @@ void ANetworkedGameMode::RegisterPlayerSpawns(TArray<APlayerStart*> Spawns)
 */
 void ANetworkedGameMode::SpawnPlayers()
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "SPAWN PLAYERS");
 	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 
+	if (NetGameState)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "NetgameState Exists");
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Player Spawns: %d"), PlayerSpawns.Num()));
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Player Array: %d"), NetGameState->PlayerArray.Num()));
 	if (NetGameState && PlayerSpawns.Num() >= NetGameState->PlayerArray.Num())
 	{
 		int i;
@@ -381,15 +392,32 @@ void ANetworkedGameMode::SpawnPlayers()
 		{
 			ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
 			CurrState->bIsPlayerDead = false;
-			ANetworkedPlayerController* CurrController = CurrState->GetInstigatorController<ANetworkedPlayerController>();
+			APawn* CurrPawn = CurrState->GetPawn();
 
-			if (CurrController)
+			if (CurrPawn)
 			{
-				ACharacter* Character = Cast<ACharacter>(CurrController->GetPawn());
+				ACharacter* Character = Cast<ACharacter>(CurrPawn);
 				if (Character)
 				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "CHARACTER CASTED CORRECTLY");
 					APlayerStart* CurrentStart = PlayerSpawns[i];
 					Character->SetActorLocationAndRotation(CurrentStart->GetActorLocation(), CurrentStart->GetActorRotation());
+
+					AKirbyCharacter* Kirb = Cast<AKirbyCharacter>(Character);
+					if (Kirb)
+					{
+						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "POINTER");
+						Kirb->bIsPointerActive = false;
+						if (Kirb->LeftController)
+						{
+							Kirb->LeftController->DeactivatePointer();
+						}
+
+						if (Kirb->RightController)
+						{
+							Kirb->RightController->DeactivatePointer();
+						}
+					}
 				}
 			}
 		}
