@@ -2,3 +2,13 @@
 
 
 #include "Networking/NetworkedGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
+UNetworkedGameInstance::UNetworkedGameInstance()
+{
+}
+
+void UNetworkedGameInstance::HandleClientTravel(const FString& URL, ETravelType TravType, bool bAbsolute)
+{
+
+}

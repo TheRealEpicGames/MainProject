@@ -18,6 +18,8 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 
 	public:
 
+		UNetworkedGameInstance();
+
 		UPROPERTY(BlueprintReadWrite)
 		FString PlayerName = TEXT("Default Player");
 
@@ -36,4 +38,6 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 		UFUNCTION( BlueprintCallable, BlueprintImplementableEvent)
 		void LeaveLobby();
 
+		UFUNCTION();
+		void HandleClientTravel(const FString& URL, ETravelType TravType, bool bAbsolute);
 };
