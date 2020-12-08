@@ -6,6 +6,5 @@
 
 void ANetworkedGameState::StartMatchWithLevel_Implementation(const FString& LevelName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Starting Level"))
 	GetWorld()->ServerTravel(LevelName);
 }
