@@ -38,6 +38,6 @@ class VRPROJECT_API UNetworkedGameInstance : public UGameInstance
 		UFUNCTION( BlueprintCallable, BlueprintImplementableEvent)
 		void LeaveLobby();
 
-		UFUNCTION();
+		UFUNCTION()
 		void HandleClientTravel(const FString& URL, ETravelType TravType, bool bAbsolute);
 };
