@@ -48,6 +48,13 @@ public:
 
 	void DeactivatePointer();
 
+	void OpenInventoryMenu();
+
+	void CloseInventoryMenu();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void InventoryMenuOpened();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	class USkeletalMeshComponent* HandMesh;
 
@@ -59,6 +66,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "UI Interaction")
 	UWidgetInteractionComponent* Pointer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI Interaction")
+	class UWidgetComponent* InventoryMenu;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
 	EGripState GripState;
@@ -74,6 +84,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
 	bool bPointerActive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "HandAbility")
+	bool bInventoryMenuActive;
 
 protected:
 	// Called when the game starts or when spawned

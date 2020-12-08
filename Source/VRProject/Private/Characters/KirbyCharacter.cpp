@@ -46,6 +46,7 @@ AKirbyCharacter::AKirbyCharacter()
 	TeleportProjectionExtent = FVector(100, 100, 100);
 
 	Health = 100.f;
+	bIsPointerActive = false;
 
 	bReplicates = true;
 	SetReplicateMovement(true);
@@ -348,32 +349,71 @@ void AKirbyCharacter::TriggerLeftPressed()
 
 void AKirbyCharacter::UILeftClickPressed()
 {
-	if (RightController->bPointerActive)
+	if (bIsPointerActive)
 	{
-		RightController->DeactivatePointer();
-	}
+		if (RightController->bPointerActive)
+		{
+			RightController->DeactivatePointer();
+		}
 
-	LeftController->UsePointer();
+		LeftController->UsePointer();
+	}
+	else
+	{
+		//Disabled til inputs are in order
+		/*if (RightController->bInventoryMenuActive)
+		{
+			RightController->CloseInventoryMenu();
+		}*/
+		if (LeftController->bInventoryMenuActive)
+		{
+			LeftController->CloseInventoryMenu();
+		}
+		else
+		{
+			LeftController->OpenInventoryMenu();
+		}
+	}
 }
 
 void AKirbyCharacter::UILeftClickReleased()
 {
-	LeftController->ReleasePointer();
+	if (bIsPointerActive)
+	{
+		LeftController->ReleasePointer();
+	}
 }
 
 void AKirbyCharacter::UIRightClickPressed()
 {
-	if (LeftController->bPointerActive)
+	UE_LOG(LogTemp, Warning, TEXT("RightClick pressed."));
+	if (bIsPointerActive)
 	{
-		LeftController->DeactivatePointer();
-	}
+		if (LeftController->bPointerActive)
+		{
+			LeftController->DeactivatePointer();
+		}
 
-	RightController->UsePointer();
+		RightController->UsePointer();
+	}
+	else
+	{
+		//Disabled til inputs are in order
+		/*if (LeftController->bInventoryMenuActive)
+		{
+			LeftController->CloseInventoryMenu();
+		}
+		
+		RightController->OpenInventoryMenu();*/
+	}
 }
 
 void AKirbyCharacter::UIRightClickReleased()
 {
-	RightController->ReleasePointer();
+	if (bIsPointerActive)
+	{
+		RightController->ReleasePointer();
+	}
 }
 
 // Tom's functions
