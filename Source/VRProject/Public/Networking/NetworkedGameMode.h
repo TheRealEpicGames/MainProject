@@ -36,10 +36,10 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		uint8 CurrentPlayerMaxTeleports;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
-		float MaxTurnTime;
+		int MaxTurnTime;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Turn)
-		float PostActionTurnTime;
+		int PostActionTurnTime;
 
 		UPROPERTY(BlueprintReadOnly)
 		bool HasActionStarted;
@@ -124,7 +124,7 @@ class VRPROJECT_API ANetworkedGameMode : public AGameMode
 		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void OnGameEnd();
 
-		UFUNCTION()
+		UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 		void ReturnToLobby();
 
 		UFUNCTION(BlueprintCallable)

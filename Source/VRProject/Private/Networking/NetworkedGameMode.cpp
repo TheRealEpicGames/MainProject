@@ -25,10 +25,18 @@ void ANetworkedGameMode::BeginPlay()
 	Super::BeginPlay();
 	bIsFreeMovementAllowed = true;
 	PlayerTurnID = 0;
-	MaxTurnTime = 30.f;
-	PostActionTurnTime = 5.f;
+	MaxTurnTime = 30;
+	PostActionTurnTime = 5;
 	HasActionStarted = false;
 	GameInProgress = false;
+
+	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
+	int i;
+	for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
+	{
+		ANetworkedPlayerState* CurrState = Cast<ANetworkedPlayerState>(NetGameState->PlayerArray[i]);
+		CurrState->bIsPlayerTurn = false;
+	}
 }
 
 void ANetworkedGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -107,7 +115,7 @@ void ANetworkedGameMode::NextTurn()
 		}
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(TurnHandle, this, &ANetworkedGameMode::NextTurn, MaxTurnTime, false);
+	CountdownStart(MaxTurnTime);
 }
 
 /*
@@ -115,7 +123,7 @@ void ANetworkedGameMode::NextTurn()
 */
 void ANetworkedGameMode::ForceNextTurn()
 {
-	GetWorld()->GetTimerManager().ClearTimer(TurnHandle);
+	GetWorld()->GetTimerManager().ClearTimer(CountdownHandle);
 	NextTurn();
 }
 
@@ -127,8 +135,8 @@ void ANetworkedGameMode::EndAllTurns()
 
 	// Make sure all timers are stopped
 	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 
+	ANetworkedGameState* NetGameState = GetGameState<ANetworkedGameState>();
 	int i;
 	for (i = 0; i < NetGameState->PlayerArray.Num(); i++)
 	{
@@ -169,8 +177,8 @@ bool ANetworkedGameMode::PerformAction(ANetworkedPlayerController* Controller)
 	if (!GameInProgress || !IsActionAllowed(Controller) || HasActionStarted)
 		return false;
 
-	GetWorld()->GetTimerManager().ClearTimer(TurnHandle);
-	GetWorld()->GetTimerManager().SetTimer(TurnHandle, this, &ANetworkedGameMode::NextTurn, PostActionTurnTime, false);
+	GetWorld()->GetTimerManager().ClearTimer(CountdownHandle);
+	CountdownStart(PostActionTurnTime);
 
 	HasActionStarted = true;
 
@@ -311,6 +319,7 @@ void ANetworkedGameMode::TriggerEndGame()
 			{
 				NetGameInstance->WinningPlayer = CurrState->GetPlayerName();
 			}
+			CurrState->bIsPlayerDead = false;
 		}
 	}
 
@@ -441,11 +450,6 @@ void ANetworkedGameMode::SpawnPlayers()
 *
 ************************************************************************************************************/
 
-void ANetworkedGameMode::ReturnToLobby()
-{
-	GetWorld()->ServerTravel(TEXT("Lobby"));
-}
-
 void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
 {
 	OnCountdownUpdated(TimesRemaining);
@@ -462,7 +466,6 @@ void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
 		GetWorld()->GetTimerManager().SetTimer(CountdownHandle, CountdownDel, 1, false);
 	}
 }
-
 
 void ANetworkedGameMode::CountdownEnd(uint8 TimesRemaining)
 {
