@@ -42,6 +42,7 @@ AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
 	if (Inventory.Contains(Item->ItemID) && (!Item->bCanStack || Inventory[Item->ItemID].StackedItems.Num() >= Item->MaxStackCapacity))
 	{
 		//TODO:Notify player that Item was not added to Inventory.
+		UE_LOG(LogTemp, Warning, TEXT("Item was not added because capacity."));
 		return Item;
 	}
 	else if (!Inventory.Contains(Item->ItemID))
@@ -50,7 +51,7 @@ AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
 		{
 			CopiedItem = DuplicateObject(Item, NULL);
 
-			//TODO:Destroy physical item
+			Item->Destroy();
 
 			TArray<AItem*> ItemsList;
 			ItemsList.Add(CopiedItem);
@@ -63,6 +64,7 @@ AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
 		else
 		{
 			//TODO:Notify player that Item was not added to Inventory.
+			UE_LOG(LogTemp, Warning, TEXT("Item was not added."));
 			return Item;
 		}
 	}
@@ -70,7 +72,7 @@ AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
 	{
 		CopiedItem = DuplicateObject(Item, NULL);
 
-		//TODO:Destroy physical item
+		Item->Destroy();
 
 		Inventory[CopiedItem->ItemID].StackedItems.Add(CopiedItem);
 	}
@@ -80,8 +82,14 @@ AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
 
 AItem* UInventorySystemComponent::RemoveItemFromInventory(AItem* Item, bool bDropItem)
 {
+	if (!Item)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Item is null."));
+		return nullptr;
+	}
 	if (!Inventory.Contains(Item->ItemID))
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Item not in inventory"));
 		return nullptr;
 	}
 
@@ -92,13 +100,19 @@ AItem* UInventorySystemComponent::RemoveItemFromInventory(AItem* Item, bool bDro
 	else
 	{
 		FActorSpawnParameters ItemSpawnParam;
-		ItemSpawnParam.Template = Item;
+		//ItemSpawnParam.Template = Item;
 
 		//Behavior for future use
-		//GetWorld()->SpawnActor<AItem>(DropItemLocation->GetRelativeLocation(), DropItemLocation->GetRelativeRotation(), ItemSpawnParam);
-
+		AItem* CopiedItem = GetWorld()->SpawnActor<AItem>(Item->GetClass(), GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation(), ItemSpawnParam);
 		Inventory[Item->ItemID].StackedItems.RemoveSingle(Item);
+		Item = CopiedItem;
 	}
+
+	if (Inventory[Item->ItemID].StackedItems.Num() == 0)
+	{
+		Inventory.Remove(Item->ItemID);
+	}
+	
 
 	return Item;
 }

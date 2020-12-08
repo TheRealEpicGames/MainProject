@@ -95,7 +95,7 @@ void AKirbyHandController::BeginPlay()
 
 	Pointer->SetActive(false);
 
-	InventoryMenu->SetActive(false);
+	InventoryMenu->SetVisibility(false);
 }
 
 // Called every frame
@@ -172,12 +172,15 @@ void AKirbyHandController::DeactivatePointer()
 
 void AKirbyHandController::OpenInventoryMenu()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Inventory Opened"));
 	InventoryMenuOpened();
-	InventoryMenu->SetActive(true);
+	InventoryMenu->SetVisibility(true);
+	bInventoryMenuActive = true;
 }
 
 void AKirbyHandController::CloseInventoryMenu()
 {
-	InventoryMenu->SetActive(false);
+	InventoryMenu->SetVisibility(false);
+	bInventoryMenuActive = false;
 }
 

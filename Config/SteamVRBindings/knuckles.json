@@ -8,17 +8,6 @@
 		{
 			"sources": [
 				{
-					"mode": "button",
-					"path": "/user/hand/right/input/a",
-					"inputs":
-					{
-						"click":
-						{
-							"output": "/actions/main/in/TeleportRight"
-						}
-					}
-				},
-				{
 					"mode": "joystick",
 					"path": "/user/hand/right/input/thumbstick",
 					"inputs":
@@ -26,28 +15,6 @@
 						"click":
 						{
 							"output": "/actions/main/in/TeleportRight"
-						}
-					}
-				},
-				{
-					"mode": "button",
-					"path": "/user/hand/left/input/a",
-					"inputs":
-					{
-						"click":
-						{
-							"output": "/actions/main/in/TeleportLeft"
-						}
-					}
-				},
-				{
-					"mode": "joystick",
-					"path": "/user/hand/left/input/thumbstick",
-					"inputs":
-					{
-						"click":
-						{
-							"output": "/actions/main/in/TeleportLeft"
 						}
 					}
 				},
@@ -119,12 +86,12 @@
 				},
 				{
 					"mode": "joystick",
-					"path": "/user/hand/right/input/thumbstick",
+					"path": "/user/hand/left/input/thumbstick",
 					"inputs":
 					{
 						"click":
 						{
-							"output": "/actions/main/in/Teleport"
+							"output": "/actions/main/in/ConfirmSelection"
 						}
 					}
 				},

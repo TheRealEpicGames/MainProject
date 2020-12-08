@@ -8,17 +8,6 @@
 		{
 			"sources": [
 				{
-					"mode": "button",
-					"path": "/user/hand/right/input/a",
-					"inputs":
-					{
-						"click":
-						{
-							"output": "/actions/main/in/TeleportRight"
-						}
-					}
-				},
-				{
 					"mode": "joystick",
 					"path": "/user/hand/right/input/joystick",
 					"inputs":
@@ -30,24 +19,13 @@
 					}
 				},
 				{
-					"mode": "button",
-					"path": "/user/hand/left/input/x",
+					"mode": "trigger",
+					"path": "/user/hand/right/input/trigger",
 					"inputs":
 					{
 						"click":
 						{
-							"output": "/actions/main/in/TeleportLeft"
-						}
-					}
-				},
-				{
-					"mode": "joystick",
-					"path": "/user/hand/left/input/joystick",
-					"inputs":
-					{
-						"click":
-						{
-							"output": "/actions/main/in/TeleportLeft"
+							"output": "/actions/main/in/TriggerRight"
 						}
 					}
 				},
@@ -92,6 +70,39 @@
 						"click":
 						{
 							"output": "/actions/main/in/UIClickRight"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/left/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/GrabLeft"
+						}
+					}
+				},
+				{
+					"mode": "trigger",
+					"path": "/user/hand/right/input/grip",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/GrabRight"
+						}
+					}
+				},
+				{
+					"mode": "button",
+					"path": "/user/hand/right/input/a",
+					"inputs":
+					{
+						"click":
+						{
+							"output": "/actions/main/in/Teleport"
 						}
 					}
 				},

@@ -360,12 +360,19 @@ void AKirbyCharacter::UILeftClickPressed()
 	}
 	else
 	{
-		if (RightController->bInventoryMenuActive)
+		//Disabled til inputs are in order
+		/*if (RightController->bInventoryMenuActive)
 		{
 			RightController->CloseInventoryMenu();
+		}*/
+		if (LeftController->bInventoryMenuActive)
+		{
+			LeftController->CloseInventoryMenu();
 		}
-
-		LeftController->OpenInventoryMenu();
+		else
+		{
+			LeftController->OpenInventoryMenu();
+		}
 	}
 }
 
@@ -379,6 +386,7 @@ void AKirbyCharacter::UILeftClickReleased()
 
 void AKirbyCharacter::UIRightClickPressed()
 {
+	UE_LOG(LogTemp, Warning, TEXT("RightClick pressed."));
 	if (bIsPointerActive)
 	{
 		if (LeftController->bPointerActive)
@@ -390,12 +398,13 @@ void AKirbyCharacter::UIRightClickPressed()
 	}
 	else
 	{
-		if (LeftController->bInventoryMenuActive)
+		//Disabled til inputs are in order
+		/*if (LeftController->bInventoryMenuActive)
 		{
 			LeftController->CloseInventoryMenu();
 		}
-
-		RightController->OpenInventoryMenu();
+		
+		RightController->OpenInventoryMenu();*/
 	}
 }
 
