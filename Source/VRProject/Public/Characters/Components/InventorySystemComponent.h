@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	class ACharacter* Char;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items)
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Items)
 	TMap<FName, FItemStack> Inventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
@@ -49,6 +49,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	// Called every frame

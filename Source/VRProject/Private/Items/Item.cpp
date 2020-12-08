@@ -34,6 +34,7 @@ AItem::AItem()
 	bCanStack = true;
 	MaxStackCapacity = 5; //Arbitrary default number. Subject to change.
 	bEquipable = true;
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned

@@ -303,48 +303,78 @@ void AKirbyCharacter::GrabLeftHand()
 {
 	if (LeftController->GripState == EGripState::EGS_CanGrab)
 	{
-		LeftController->GrabItem(LeftController->GrabbableItem);
+		GrabLeftHandServer();
 	}
+}
+
+void AKirbyCharacter::GrabLeftHandServer_Implementation()
+{
+	LeftController->GrabItem(LeftController->GrabbableItem);
 }
 
 void AKirbyCharacter::GrabRightHand()
 {
 	if (RightController->GripState == EGripState::EGS_CanGrab)
 	{
-		RightController->GrabItem(RightController->GrabbableItem);
+		GrabRightHandServer();
 	}
+}
+
+void AKirbyCharacter::GrabRightHandServer_Implementation()
+{
+	RightController->GrabItem(RightController->GrabbableItem);
 }
 
 void AKirbyCharacter::ReleaseLeftHand()
 {
 	if (LeftController->GripState == EGripState::EGS_Grab)
 	{
-		LeftController->ReleaseItem(LeftController->GrabbedItem);
+		ReleaseLeftHandServer();
 	}
+}
+
+void AKirbyCharacter::ReleaseLeftHandServer_Implementation()
+{
+	LeftController->ReleaseItem(LeftController->GrabbedItem);
 }
 
 void AKirbyCharacter::ReleaseRightHand()
 {
 	if (RightController->GripState == EGripState::EGS_Grab)
 	{
-		RightController->ReleaseItem(RightController->GrabbableItem);
+		ReleaseRightHandServer();
 	}
+}
+
+void AKirbyCharacter::ReleaseRightHandServer_Implementation()
+{
+	RightController->ReleaseItem(RightController->GrabbableItem);
 }
 
 void AKirbyCharacter::TriggerRightPressed()
 {
 	if (RightController->GripState == EGripState::EGS_Grab)
 	{
-		RightController->UseItem(RightController->GrabbedItem);
+		TriggerRightPressedServer();
 	}
+}
+
+void AKirbyCharacter::TriggerRightPressedServer_Implementation()
+{
+	RightController->UseItem(RightController->GrabbedItem);
 }
 
 void AKirbyCharacter::TriggerLeftPressed()
 {
 	if (LeftController->GripState == EGripState::EGS_Grab)
 	{
-		LeftController->UseItem(LeftController->GrabbedItem);
+		TriggerLeftPressedServer();
 	}
+}
+
+void AKirbyCharacter::TriggerLeftPressedServer_Implementation()
+{
+	LeftController->UseItem(LeftController->GrabbedItem);
 }
 
 void AKirbyCharacter::UILeftClickPressed()

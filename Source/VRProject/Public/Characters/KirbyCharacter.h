@@ -152,6 +152,24 @@ private:
 
 	void TriggerLeftPressed();
 
+	UFUNCTION(Server, Unreliable)
+	void GrabLeftHandServer();
+
+	UFUNCTION(Server, Unreliable)
+	void GrabRightHandServer();
+
+	UFUNCTION(Server, Unreliable)
+	void ReleaseLeftHandServer();
+
+	UFUNCTION(Server, Unreliable)
+	void ReleaseRightHandServer();
+
+	UFUNCTION(Server, Unreliable)
+	void TriggerRightPressedServer();
+
+	UFUNCTION(Server, Unreliable)
+	void TriggerLeftPressedServer();
+
 	//UI Interaction Functions
 	void UILeftClickPressed();
 

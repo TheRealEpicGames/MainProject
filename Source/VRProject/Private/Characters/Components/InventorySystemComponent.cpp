@@ -3,6 +3,7 @@
 
 #include "Characters/Components/InventorySystemComponent.h"
 #include "Items/Item.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UInventorySystemComponent::UInventorySystemComponent()
@@ -33,6 +34,12 @@ void UInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UInventorySystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UInventorySystemComponent, Inventory);
 }
 
 AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)
