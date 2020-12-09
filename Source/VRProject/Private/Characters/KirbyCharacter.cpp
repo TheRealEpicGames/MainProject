@@ -129,20 +129,19 @@ void AKirbyCharacter::Tick(float DeltaTime)
 
 		if (KirbyCamera)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Rotato: %f"), KirbyCamera->GetRelativeRotation().Yaw));
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Component: %f"), KirbyCamera->GetComponentRotation().Yaw));
 			FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
-			if ((NewRot - OldRotation).Yaw > 5)
+			if (FMath::Abs(OldYaw - KirbyCamera->GetComponentRotation().Yaw) > 1)
 			{
 				bShouldUpdate = true;
 			}
 
+			OldYaw = KirbyCamera->GetComponentRotation().Yaw;
 			OldRotation = NewRot;
 		}
 
 		if (bShouldUpdate)
 		{
-			UpdateCharacterOnServer(OldLeftPos, OldRightPos, OldRotation);
+			UpdateCharacterOnServer(OldLeftPos, OldRightPos, OldYaw);
 		}
 	}
 }
@@ -580,9 +579,9 @@ void AKirbyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(AKirbyCharacter, RightHandPos);
 }
 
-void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, const FRotator& HeadRot)
+void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, float HeadRot)
 {
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
-	GetMesh()->SetRelativeRotation(HeadRot);
+	GetMesh()->SetRelativeRotation(FRotator(0.f, HeadRot, 0.f));
 }

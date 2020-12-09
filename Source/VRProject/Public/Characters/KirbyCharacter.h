@@ -86,6 +86,7 @@ public:
 	FVector OldLeftPos;
 	FVector OldRightPos;
 	FRotator OldRotation;
+	float OldYaw;
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	FVector LeftHandPos;
@@ -202,5 +203,5 @@ private:
 	void PerformActionOnServer();
 
 	UFUNCTION(Server, Unreliable)
-	void UpdateCharacterOnServer(const FVector& LeftPos, const FVector& RightPos, const FRotator& HeadRot);
+	void UpdateCharacterOnServer(const FVector& LeftPos, const FVector& RightPos, float HeadRot);
 };
