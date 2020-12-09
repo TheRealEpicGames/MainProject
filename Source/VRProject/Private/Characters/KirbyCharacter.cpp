@@ -101,6 +101,8 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	{
 		FVector NewPos;
 		LeftController->ActorToWorld().TransformPosition(NewPos);
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Left Hand Pos: %f %f %f"), NewPos.X, NewPos.Y, NewPos.Z));
 		if ((NewPos - OldLeftPos).Size() > 5)
 		{
 			bShouldUpdate = true;
