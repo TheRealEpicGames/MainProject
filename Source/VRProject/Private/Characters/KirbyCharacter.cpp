@@ -587,6 +587,6 @@ void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& Left
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
 	
-	SetActorRotation(FRotator(0, HeadRot, 0));
-	//GetMesh()->SetRelativeRotation(FRotator(0.f, HeadRot, 0.f));
+	//SetActorRotation(FRotator(0, HeadRot, 0));
+	GetMesh()->SetWorldRotation(FRotator(0, HeadRot, 0));
 }
