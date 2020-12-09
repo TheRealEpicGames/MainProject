@@ -589,4 +589,5 @@ void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& Left
 	RightHandPos = RightPos;
 	
 	AddControllerYawInput(HeadRot);
+	KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, HeadRot, 0));
 }
