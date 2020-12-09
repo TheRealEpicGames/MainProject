@@ -12,6 +12,7 @@
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Characters/GameplayActors/KirbyHandController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Networking/NetworkedGameMode.h"
 #include "Networking/NetworkedPlayerController.h"
@@ -587,6 +588,5 @@ void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& Left
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
 	
-	//SetActorRotation(FRotator(0, HeadRot, 0));
-	GetMesh()->SetWorldRotation(FRotator(0, HeadRot, 0));
+	AddControllerYawInput(HeadRot);
 }
