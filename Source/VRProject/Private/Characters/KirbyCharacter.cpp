@@ -100,7 +100,7 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	if (LeftController)
 	{
 		FVector NewPos;
-		LeftController->ActorToWorld().TransformPosition(NewPos);
+		NewPos = LeftController->GetActorLocation();
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Left Hand Pos: %f %f %f"), NewPos.X, NewPos.Y, NewPos.Z));
 		if ((NewPos - OldLeftPos).Size() > 5)
@@ -116,7 +116,7 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	{
 
 		FVector NewPos;
-		RightController->ActorToWorld().TransformPosition(NewPos);
+		NewPos = RightController->GetActorLocation();
 		if ((NewPos - OldLeftPos).Size() > 5)
 		{
 			bShouldUpdate = true;
@@ -130,7 +130,7 @@ void AKirbyCharacter::Tick(float DeltaTime)
 
 	if (KirbyCamera)
 	{
-		FRotator NewRot(0, KirbyCamera->GetRelativeRotation().Yaw, 0);
+		FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
 		if ((NewRot - OldRotation).Yaw > 5)
 		{
 			bShouldUpdate = true;
