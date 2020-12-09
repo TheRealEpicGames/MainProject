@@ -95,8 +95,11 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	//Sync colliders with playspace location
 	FVector NewCameraOffset = KirbyCamera->GetComponentLocation() - GetActorLocation();
 	NewCameraOffset.Z = 0;
-	AddActorWorldOffset(NewCameraOffset);
-	VRRoot->AddWorldOffset(-NewCameraOffset);
+	if (NewCameraOffset.Size() < 10)
+	{
+		AddActorWorldOffset(NewCameraOffset);
+		VRRoot->AddWorldOffset(-NewCameraOffset);
+	}
 
 	bool bShouldUpdate = false;
 	if (IsLocallyControlled())
