@@ -46,7 +46,7 @@ AKirbyCharacter::AKirbyCharacter()
 	TeleportFadeDuration = 1;
 	TeleportProjectionExtent = FVector(100, 100, 100);
 
-	Health = 100.f;
+	Health = 1.f;
 	bIsPointerActive = false;
 
 	bReplicates = true;
@@ -193,13 +193,13 @@ void AKirbyCharacter::Die()
 
 void AKirbyCharacter::BeginTeleport()
 {
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "FUCK THIS");
 	if (!bTeleporting) // && CurrentNumOfTeleports > 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TeleportActive"));
+		
 		GetWorldTimerManager().SetTimer(TeleportUpdateLocationHandle, this, &AKirbyCharacter::UpdateTeleportMarker, 0.02f, true);
 		bTeleporting = true;
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Teleport %d"), bTeleporting));
 	}
 	else if(bTeleporting)
 	{
@@ -526,7 +526,8 @@ void AKirbyCharacter::NotifyGhostStatusChanged_Implementation()
 
 void AKirbyCharacter::TeleportOnServer_Implementation(const FVector& Location)
 {
-
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Do The Teleport")));
 	// If player is able to perform the movement
 	ANetworkedGameMode* NetGameMode = Cast<ANetworkedGameMode>(UGameplayStatics::GetGameMode(this));
 	if (NetGameMode && NetGameMode->CheckAndConsumeMovement(GetController<ANetworkedPlayerController>()))
@@ -586,5 +587,6 @@ void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& Left
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
 	
-	GetMesh()->SetRelativeRotation(FRotator(0.f, HeadRot, 0.f));
+	SetActorRotation(FRotator(0, HeadRot, 0));
+	//GetMesh()->SetRelativeRotation(FRotator(0.f, HeadRot, 0.f));
 }
