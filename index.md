@@ -5,7 +5,7 @@ Borkbite 2 is  multiplayer turn-based battle royale artillery game to build alli
 Borkbite 2 will be released on December 9th, 2020 by The Real Epic Games based out of Salt Lake City for HTC Vive, HTC Index, and Oculus Rift.
 
 ### Teaser (Click to Play)
-[![](http://img.youtube.com/vi/aG8AIULmqew/0.jpg)](http://www.youtube.com/watch?v=aG8AIULmqew "Fortnite 2")
+[![](http://img.youtube.com/vi/aG8AIULmqew/0.jpg)](https://www.youtube.com/watch?v=XqLFlvU0lSU "Fortnite 2")
 
 ### Game Images
 ![Image](https://cdn.discordapp.com/attachments/747605487238774797/786328400578478080/1.JPG)
@@ -20,7 +20,7 @@ Borkbite 2 will be released on December 9th, 2020 by The Real Epic Games based o
 
 ![Image](https://cdn.discordapp.com/attachments/747605487238774797/786328427682070539/6.JPG)
 
-![Image](https://cdn.discordapp.com/attachments/747605487238774797/786328420534452284/7.JPG)
+![Image](https://cdn.discordapp.com/attachments/747605487238774797/786363651808428052/unknown.png)
 
 ### Features
 - Fully destructible voxel-based terrain
