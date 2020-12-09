@@ -144,9 +144,10 @@ void AKirbyCharacter::Tick(float DeltaTime)
 			OldRotation = NewRot;
 		}
 
-		AddControllerYawInput(diff);
+		if(GetLocalRole() != ROLE_Authority)
+			AddControllerYawInput(diff);
 		UpdateCharacterOnServer(OldLeftPos, OldRightPos, diff);
-		KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));
+		//KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));
 	}
 }
 
