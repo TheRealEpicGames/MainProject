@@ -40,7 +40,6 @@ void UInventorySystemComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 void UInventorySystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UInventorySystemComponent, Inventory);
 }
 
 AItem* UInventorySystemComponent::AddItemToInventory(AItem* Item)

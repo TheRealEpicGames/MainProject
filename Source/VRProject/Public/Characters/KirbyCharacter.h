@@ -199,7 +199,7 @@ private:
 	void TeleportOnServer(const FVector& Location);
 
 	UFUNCTION(Client, Unreliable)
-	void TeleportResponseClient();
+	void TeleportResponseClient(const FVector& Location);
 
 	UFUNCTION(Server, Unreliable)
 	void PerformActionOnServer();

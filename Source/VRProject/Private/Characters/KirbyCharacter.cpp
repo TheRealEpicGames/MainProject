@@ -541,7 +541,7 @@ void AKirbyCharacter::TeleportOnServer_Implementation(const FVector& Location)
 	if (NetGameMode && NetGameMode->CheckAndConsumeMovement(GetController<ANetworkedPlayerController>()))
 	{
 		// Tell client the teleport is a go
-		TeleportResponseClient();
+		TeleportResponseClient(Location);
 
 		// Perform teleport after same time as client fades
 		FTimerHandle TeleHandle;
@@ -552,13 +552,19 @@ void AKirbyCharacter::TeleportOnServer_Implementation(const FVector& Location)
 	}
 }
 
-void AKirbyCharacter::TeleportResponseClient_Implementation()
+void AKirbyCharacter::TeleportResponseClient_Implementation(const FVector& Location)
 {
 	// Client simply performs fade and ending the teleport
 	StartFade(0, 1);
 
 	FTimerHandle FadeHandle;
 	GetWorldTimerManager().SetTimer(FadeHandle, this, &AKirbyCharacter::EndTeleport, TeleportFadeDuration);
+
+	FTimerHandle TeleHandle;
+	FTimerDelegate TeleportDel;
+	TeleportDel.BindUFunction(this, FName("PerformTeleport"), Location);
+
+	GetWorld()->GetTimerManager().SetTimer(TeleHandle, TeleportDel, TeleportFadeDuration, false);
 }
 
 void AKirbyCharacter::PerformTeleport(const FVector& Location)

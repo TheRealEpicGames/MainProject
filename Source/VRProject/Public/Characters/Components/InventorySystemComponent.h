@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	class ACharacter* Char;
 
-	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = Items)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Items)
 	TMap<FName, FItemStack> Inventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
