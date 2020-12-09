@@ -44,6 +44,6 @@ Hello! We're The Real Epic Games. The Real One. Any others claiming to be under 
 
 **Thomas Ady** _(u1120386@utah.edu)_: Game Rules, UI, Networking, Chief Diabetic
 
-**Michael Ratajczyk** _(micratajczyk@gmail.com)_: Funny Logo, Comic Relief, Level Design
+**Michael Ratajczyk** _(micratajczyk@gmail.com)_: Funny Logo, Comic Relief, Level Design, Trailer
 
 **Rogelio E. Cardona-Rivera** _(rogelio@cs.utah.edu)_: Faculty Sponsor
