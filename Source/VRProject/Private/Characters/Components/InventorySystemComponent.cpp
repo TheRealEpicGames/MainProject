@@ -15,6 +15,7 @@ UInventorySystemComponent::UInventorySystemComponent()
 	// ...
 	InventoryMaxCapacity = 5;
 	bIsInventoryOpen = false;
+	SetIsReplicated(true);
 }
 
 
