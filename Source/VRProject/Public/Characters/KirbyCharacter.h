@@ -83,6 +83,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	bool bIsPointerActive;
 
+	FVector OldLeftPos;
+	FVector OldRightPos;
+	FRotator OldRotation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	FVector LeftHandPos;
+
+	UPROPERTY(Replicated, BlueprintReadOnly)
+	FVector RightHandPos;
+
 private:
 
 	bool bTeleporting;
@@ -92,6 +102,8 @@ private:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	// Called every frame
@@ -188,4 +200,7 @@ private:
 
 	UFUNCTION(Server, Unreliable)
 	void PerformActionOnServer();
+
+	UFUNCTION(Server, Unreliable)
+	void UpdateCharacterOnServer(const FVector& LeftPos, const FVector& RightPos, const FRotator& HeadRot);
 };

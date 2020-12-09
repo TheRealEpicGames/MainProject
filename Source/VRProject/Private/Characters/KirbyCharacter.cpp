@@ -16,6 +16,7 @@
 #include "Networking/NetworkedGameMode.h"
 #include "Networking/NetworkedPlayerController.h"
 #include "Characters/Components/InventorySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AKirbyCharacter::AKirbyCharacter()
@@ -50,6 +51,9 @@ AKirbyCharacter::AKirbyCharacter()
 
 	bReplicates = true;
 	SetReplicateMovement(true);
+
+	OldLeftPos = FVector();
+	OldRightPos = FVector();
 }
 
 // Called when the game starts or when spawned
@@ -91,6 +95,52 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	AddActorWorldOffset(NewCameraOffset);
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 
+	bool bShouldUpdate = false;
+
+	if (LeftController)
+	{
+		FVector NewPos;
+		LeftController->ActorToWorld().TransformPosition(NewPos);
+		if ((NewPos - OldLeftPos).Size() > 5)
+		{
+			bShouldUpdate = true;
+		}
+
+
+			OldLeftPos = NewPos;
+	}
+
+	if (RightController)
+	{
+
+		FVector NewPos;
+		RightController->ActorToWorld().TransformPosition(NewPos);
+		if ((NewPos - OldLeftPos).Size() > 5)
+		{
+			bShouldUpdate = true;
+		}
+
+
+		OldRightPos = NewPos;
+
+		
+	}
+
+	if (KirbyCamera)
+	{
+		FRotator NewRot(0, KirbyCamera->GetRelativeRotation().Yaw, 0);
+		if ((NewRot - OldRotation).Yaw > 5)
+		{
+			bShouldUpdate = true;
+		}
+
+		OldRotation = NewRot;
+	}
+
+	if (bShouldUpdate)
+	{
+		UpdateCharacterOnServer(OldLeftPos, OldRightPos, OldRotation);
+	}
 }
 
 // Called to bind functionality to input
@@ -515,4 +565,20 @@ void AKirbyCharacter::PerformActionOnServer_Implementation()
 
 		//TODO add functionality for an action
 	}
+
+
+}
+
+void AKirbyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AKirbyCharacter, LeftHandPos);
+	DOREPLIFETIME(AKirbyCharacter, RightHandPos);
+}
+
+void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, const FRotator& HeadRot)
+{
+	LeftHandPos = LeftPos;
+	RightHandPos = RightPos;
+	GetMesh()->SetRelativeRotation(HeadRot);
 }
