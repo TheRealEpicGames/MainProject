@@ -129,8 +129,8 @@ void AKirbyCharacter::Tick(float DeltaTime)
 
 		if (KirbyCamera)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Rotato: %df %f %f"), KirbyCamera->GetRelativeRotation().Pitch, KirbyCamera->GetRelativeRotation().Yaw, KirbyCamera->GetRelativeRotation().Roll));
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Component: %df %f %f"), KirbyCamera->GetComponentRotation().Pitch, KirbyCamera->GetComponentRotation().Yaw, KirbyCamera->GetComponentRotation().Roll));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Rotato: %f"), KirbyCamera->GetRelativeRotation().Yaw));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Component: %f"), KirbyCamera->GetComponentRotation().Yaw));
 			FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
 			if ((NewRot - OldRotation).Yaw > 5)
 			{
