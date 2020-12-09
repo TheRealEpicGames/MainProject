@@ -145,9 +145,12 @@ void AKirbyCharacter::Tick(float DeltaTime)
 			OldRotation = NewRot;
 		}
 
+		if(LeftController && RightController)
+			UpdateCharacterOnServer(OldLeftPos, OldRightPos, LeftController->GetActorRotation(), RightController->GetActorRotation(), diff);
+
 		/*if(GetLocalRole() != ROLE_Authority)
 			AddControllerYawInput(diff);
-		UpdateCharacterOnServer(OldLeftPos, OldRightPos, diff);
+		
 		KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));*/
 	}
 }
@@ -196,7 +199,7 @@ void AKirbyCharacter::Die()
 	//TODO: Death
 }
 
-void AKirbyCharacter::BeginTeleport()
+void AKirbyCharacter::BeginTeleport_Implementation()
 {
 	if (!bTeleporting) // && CurrentNumOfTeleports > 0)
 	{
@@ -231,7 +234,7 @@ void AKirbyCharacter::EndTeleport()
 	StartFade(1, 0);
 }
 
-void AKirbyCharacter::CancelTeleport()
+void AKirbyCharacter::CancelTeleport_Implementation()
 {
 	bTeleporting = false;
 	TeleportationMarker->SetVisibility(false);
@@ -587,10 +590,15 @@ void AKirbyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(AKirbyCharacter, bIsPointerActive);
 }
 
-void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, float HeadRot)
+void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, const FRotator& LeftRot, const FRotator& RightRot, float HeadRot)
 {
+
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
+	if(LeftController)
+		LeftController->SetActorLocationAndRotation(LeftHandPos, LeftRot);
+	if(RightController)
+		RightController->SetActorLocationAndRotation(RightHandPos, RightRot);
 	
-	AddControllerYawInput(HeadRot);
+	//AddControllerYawInput(HeadRot);
 }

@@ -138,10 +138,12 @@ private:
 	void Die();
 
 	//Teleport Functions
+	UFUNCTION(Server, Unreliable)
 	void BeginTeleport();
 
 	void EndTeleport();
 
+	UFUNCTION(Server, Unreliable)
 	void CancelTeleport();
 
 	bool FindTeleportationDestination(TArray<FVector> &OutPath, FVector& OutLocation);
@@ -203,5 +205,5 @@ private:
 	void PerformActionOnServer();
 
 	UFUNCTION(Server, Unreliable)
-	void UpdateCharacterOnServer(const FVector& LeftPos, const FVector& RightPos, float HeadRot);
+	void UpdateCharacterOnServer(const FVector& LeftPos, const FVector& RightPos, const FRotator& LeftRot, const FRotator& RightRot, float HeadRot);
 };
