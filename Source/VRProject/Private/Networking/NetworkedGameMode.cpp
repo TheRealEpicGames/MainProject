@@ -17,7 +17,7 @@ ANetworkedGameMode::ANetworkedGameMode() : Super()
 {
 	DefaultPawnClass = ATestMenuCharacterNoVR::StaticClass();
 	bUseSeamlessTravel = true;
-	CurrentPlayerMaxTeleports = 5;
+	CurrentPlayerMaxTeleports = 10;
 }
 
 void ANetworkedGameMode::BeginPlay()

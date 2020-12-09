@@ -47,8 +47,8 @@ AKirbyCharacter::AKirbyCharacter()
 	TeleportFadeDuration = 1;
 	TeleportProjectionExtent = FVector(100, 100, 100);
 
-	Health = 1.f;
 	bIsPointerActive = false;
+	SetCanBeDamaged(true);
 
 	bReplicates = true;
 	SetReplicateMovement(true);
@@ -175,31 +175,6 @@ void AKirbyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction(TEXT("UIClickRight"), IE_Released, this, &AKirbyCharacter::UIRightClickReleased);
 	PlayerInputComponent->BindAction(TEXT("TriggerRight"), IE_Pressed, this, &AKirbyCharacter::TriggerRightPressed);
 	PlayerInputComponent->BindAction(TEXT("TriggerLeft"), IE_Pressed, this, &AKirbyCharacter::TriggerLeftPressed);
-}
-
-void AKirbyCharacter::DecrementHealth(float Amount)
-{
-	if (Health - Amount <= 0.f)
-	{
-		Health -= Amount;
-		Die();
-	}
-	else
-	{
-		Health -= Amount;
-	}
-}
-
-float AKirbyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	DecrementHealth(DamageAmount);
-
-	return DamageAmount;
-}
-
-void AKirbyCharacter::Die()
-{
-	//TODO: Death
 }
 
 void AKirbyCharacter::BeginTeleport_Implementation()

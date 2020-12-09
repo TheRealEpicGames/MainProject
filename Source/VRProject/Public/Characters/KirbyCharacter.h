@@ -71,10 +71,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AKirbyHandController> HandControllerClass;
 
-	//Health Properties
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player | Health")
-	float Health;
-
 	// Tom's ghost properties
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = CharacterStatus)
 	bool bIsGhost;
@@ -130,12 +126,6 @@ public:
 	void PerformTeleport(const FVector& Location);
 
 private:
-	//Health Functions
-	void DecrementHealth(float Amount);
-
-	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
-
-	void Die();
 
 	//Teleport Functions
 	UFUNCTION(Server, Unreliable)
