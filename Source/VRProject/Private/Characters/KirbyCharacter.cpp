@@ -55,7 +55,8 @@ AKirbyCharacter::AKirbyCharacter()
 
 	OldLeftPos = FVector();
 	OldRightPos = FVector();
-	bUseControllerRotationYaw = false;
+	//bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
@@ -144,10 +145,10 @@ void AKirbyCharacter::Tick(float DeltaTime)
 			OldRotation = NewRot;
 		}
 
-		if(GetLocalRole() != ROLE_Authority)
+		/*if(GetLocalRole() != ROLE_Authority)
 			AddControllerYawInput(diff);
 		UpdateCharacterOnServer(OldLeftPos, OldRightPos, diff);
-		KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));
+		KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));*/
 	}
 }
 
