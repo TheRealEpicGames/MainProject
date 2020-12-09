@@ -133,9 +133,10 @@ void AKirbyCharacter::Tick(float DeltaTime)
 		if (KirbyCamera)
 		{
 			FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
+			diff = OldYaw - KirbyCamera->GetComponentRotation().Yaw;
 			if (FMath::Abs(OldYaw - KirbyCamera->GetComponentRotation().Yaw) > 1)
 			{
-				diff = OldYaw - KirbyCamera->GetComponentRotation().Yaw;
+				
 				bShouldUpdate = true;
 			}
 
@@ -143,10 +144,9 @@ void AKirbyCharacter::Tick(float DeltaTime)
 			OldRotation = NewRot;
 		}
 
-		if (bShouldUpdate)
-		{
-			UpdateCharacterOnServer(OldLeftPos, OldRightPos, diff);
-		}
+		AddControllerYawInput(diff);
+		UpdateCharacterOnServer(OldLeftPos, OldRightPos, diff);
+		KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, -diff, 0));
 	}
 }
 
@@ -591,5 +591,4 @@ void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& Left
 	RightHandPos = RightPos;
 	
 	AddControllerYawInput(HeadRot);
-	KirbyCamera->SetRelativeRotation(KirbyCamera->GetRelativeRotation() + FRotator(0, HeadRot, 0));
 }
