@@ -96,52 +96,54 @@ void AKirbyCharacter::Tick(float DeltaTime)
 	VRRoot->AddWorldOffset(-NewCameraOffset);
 
 	bool bShouldUpdate = false;
-
-	if (LeftController)
+	if (IsLocallyControlled())
 	{
-		FVector NewPos;
-		NewPos = LeftController->GetActorLocation();
-		if (GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Left Hand Pos: %f %f %f"), NewPos.X, NewPos.Y, NewPos.Z));
-		if ((NewPos - OldLeftPos).Size() > 5)
+		if (LeftController)
 		{
-			bShouldUpdate = true;
-		}
+			FVector NewPos;
+			NewPos = LeftController->GetActorLocation();
+			if ((NewPos - OldLeftPos).Size() > 5)
+			{
+				bShouldUpdate = true;
+			}
 
 
 			OldLeftPos = NewPos;
-	}
-
-	if (RightController)
-	{
-
-		FVector NewPos;
-		NewPos = RightController->GetActorLocation();
-		if ((NewPos - OldLeftPos).Size() > 5)
-		{
-			bShouldUpdate = true;
 		}
 
-
-		OldRightPos = NewPos;
-
-		
-	}
-
-	if (KirbyCamera)
-	{
-		FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
-		if ((NewRot - OldRotation).Yaw > 5)
+		if (RightController)
 		{
-			bShouldUpdate = true;
+
+			FVector NewPos;
+			NewPos = RightController->GetActorLocation();
+			if ((NewPos - OldLeftPos).Size() > 5)
+			{
+				bShouldUpdate = true;
+			}
+
+
+			OldRightPos = NewPos;
+
+
 		}
 
-		OldRotation = NewRot;
-	}
+		if (KirbyCamera)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Rotato: %df %f %f"), KirbyCamera->GetRelativeRotation().Pitch, KirbyCamera->GetRelativeRotation().Yaw, KirbyCamera->GetRelativeRotation().Roll));
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Component: %df %f %f"), KirbyCamera->GetComponentRotation().Pitch, KirbyCamera->GetComponentRotation().Yaw, KirbyCamera->GetComponentRotation().Roll));
+			FRotator NewRot(0, KirbyCamera->GetComponentRotation().Yaw, 0);
+			if ((NewRot - OldRotation).Yaw > 5)
+			{
+				bShouldUpdate = true;
+			}
 
-	if (bShouldUpdate)
-	{
-		UpdateCharacterOnServer(OldLeftPos, OldRightPos, OldRotation);
+			OldRotation = NewRot;
+		}
+
+		if (bShouldUpdate)
+		{
+			UpdateCharacterOnServer(OldLeftPos, OldRightPos, OldRotation);
+		}
 	}
 }
 
