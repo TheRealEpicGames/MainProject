@@ -54,6 +54,7 @@ AKirbyCharacter::AKirbyCharacter()
 
 	OldLeftPos = FVector();
 	OldRightPos = FVector();
+	bUseControllerRotationYaw = false;
 }
 
 // Called when the game starts or when spawned
@@ -577,11 +578,13 @@ void AKirbyCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME(AKirbyCharacter, LeftHandPos);
 	DOREPLIFETIME(AKirbyCharacter, RightHandPos);
+	DOREPLIFETIME(AKirbyCharacter, bIsPointerActive);
 }
 
 void AKirbyCharacter::UpdateCharacterOnServer_Implementation(const FVector& LeftPos, const FVector& RightPos, float HeadRot)
 {
 	LeftHandPos = LeftPos;
 	RightHandPos = RightPos;
+	
 	GetMesh()->SetRelativeRotation(FRotator(0.f, HeadRot, 0.f));
 }

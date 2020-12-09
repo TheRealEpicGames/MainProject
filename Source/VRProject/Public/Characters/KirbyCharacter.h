@@ -80,7 +80,7 @@ public:
 	bool bIsGhost;
 
 	//UI Properties
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	UPROPERTY(EditAnywhere, Replicated, BlueprintReadWrite, Category = "UI")
 	bool bIsPointerActive;
 
 	FVector OldLeftPos;
