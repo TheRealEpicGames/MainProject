@@ -453,7 +453,6 @@ void ANetworkedGameMode::SpawnPlayers()
 void ANetworkedGameMode::CountdownStart(uint8 TimesRemaining)
 {
 	OnCountdownUpdated(TimesRemaining);
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, "Countdown");
 	if (TimesRemaining <= 0)
 	{
 		NextTurn();
